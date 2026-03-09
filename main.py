@@ -36,7 +36,7 @@ if "logged_in" not in st.session_state:
     st.session_state.user_role = None
 
 if not st.session_state.logged_in:
-    st.title("🔐 Lisans Yönetim Paneli")
+    st.title("🔐 Lisans Yönetim Paneli", anchor=False)
     with st.form("login_form"):
         k_adi = st.text_input("Kullanıcı Adı")
         sifre = st.text_input("Şifre", type="password")
@@ -98,7 +98,7 @@ sc_module_options = [
     "Tornalama", "Gelişmiş Mill-Turn", "Kayar Otomat (Swiss-Type)", "Solid Probe"
 ]
 
-# --- 🚀 HIZLANDIRICI: VERİ ÖNBELLEKLEME SİSTEMİ ---
+# --- 🚀 VERİ ÖNBELLEKLEME ---
 @st.cache_data(show_spinner=False, ttl=600)
 def verileri_cek_ve_birlestir():
     comps = supabase.table("companies").select("*").order("name").execute().data
@@ -150,13 +150,9 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                         c_f1.caption(f"📄 {f['file_name']}")
                         if c_f2.button("Sil", key=f"del_file_edit_{f['id']}"):
                             try:
-                                # Storage'dan fiziksel dosyayı sil
                                 file_path = f['file_url'].split("firma%20postlari/")[-1]
                                 supabase.storage.from_("firma postlari").remove([file_path])
-                            except:
-                                pass # Dosya fiziksel olarak yoksa bile veritabanından silelim
-                            
-                            # Veritabanından kaydı sil
+                            except: pass
                             supabase.table("company_files").delete().eq("id", f['id']).execute()
                             st.cache_data.clear()
                             st.rerun()
@@ -323,7 +319,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 st.subheader("📞 İletişim & Notlar", anchor=False)
                 for c in company.get('contacts', []): st.write(f"👤 **{c['full_name']}**: {c['phone']}")
                 st.write(f"📍 {company.get('address', '-')}")
-                for n in company.get('company_notes', []): st.info(f"**Düzenleyen ({n['author']})**: {n['note']}")
+                for n in company.get('company_notes', []): st.info(f"**Yazan/Düzenleyen ({n['author']})**: {n['note']}")
                 
                 sct_list = [l for l in lic_res if l['software_type'].startswith('solidcam_deneme:')]
                 if sct_list:
@@ -622,7 +618,7 @@ with tabs[2]:
 if st.session_state.user_role == "admin":
     with tabs[3]:
         
-        st.subheader("👥 Mevcut Kullanıcılar")
+        st.subheader("👥 Mevcut Kullanıcılar", anchor=False)
         for u in tum_kullanicilar:
             col_u1, col_u2, col_u3 = st.columns([2, 2, 1])
             col_u1.write(f"👤 **{u['users']}**")
@@ -638,7 +634,7 @@ if st.session_state.user_role == "admin":
                 col_u3.write("*(Mevcut Oturum)*")
                 
         st.markdown("---")
-        st.subheader("➕ Yeni Kullanıcı Ekle")
+        st.subheader("➕ Yeni Kullanıcı Ekle", anchor=False)
         with st.form("new_user_form", clear_on_submit=True):
             un = st.text_input("Yeni Kullanıcı Adı")
             up = st.text_input("Şifre Belirle", type="password")
