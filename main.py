@@ -6,14 +6,14 @@ import pandas as pd
 import io
 import re
 import plotly.express as px
-import hashlib # --- YENİ: Şifreleme (Hashing) Kütüphanesi ---
+import hashlib
 
-# --- BAĞLANTI AYARLARI (SECRETS KULLANIMI) ---
+# --- 🔌 BAĞLANTI (SECRETS) ---
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
 supabase = create_client(URL, KEY)
 
-# --- SAYFA AYARLARI VE CSS ---
+# --- 🎨 GÖRSEL AYARLAR ---
 st.set_page_config(page_title="Lisans Takip Sistemi", layout="wide")
 
 st.markdown("""
@@ -26,6 +26,15 @@ st.markdown("""
         border: 1px solid #333;
         padding: 15px;
         border-radius: 10px;
+    }
+    .timeline-box {
+        border-left: 3px solid #ff4b4b;
+        padding-left: 15px;
+        margin-bottom: 15px;
+        background-color: rgba(255, 255, 255, 0.05);
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-radius: 0 8px 8px 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -46,7 +55,6 @@ if not st.session_state.logged_in:
         k_adi = st.text_input("Kullanıcı Adı")
         sifre = st.text_input("Şifre", type="password")
         if st.form_submit_button("Sisteme Giriş Yap", use_container_width=True):
-            # --- YENİ: Girilen şifreyi hashleyip veritabanındaki ile karşılaştırıyoruz ---
             hashli_giris = sifre_hashle(sifre)
             user_check = supabase.table("users").select("*").eq("users", k_adi).eq("password", hashli_giris).execute()
             
@@ -117,11 +125,18 @@ def verileri_cek_ve_birlestir():
     all_lics_joined = supabase.table("licenses").select("*, companies(name)").execute().data
     users_list = supabase.table("users").select("*").execute().data
 
+    # Yeni CRM Tablosunu Çekiyoruz (Tablo yoksa hata vermesin diye try-except)
+    try:
+        activities = supabase.table("company_activities").select("*").order("activity_date", desc=True).execute().data
+    except:
+        activities = []
+
     for c in comps:
         c['contacts'] = [x for x in cons if x['company_id'] == c['id']]
         c['company_notes'] = [x for x in notes if x['company_id'] == c['id']]
         c['licenses'] = [x for x in lics if x['company_id'] == c['id']]
         c['company_files'] = [x for x in files if x['company_id'] == c['id']]
+        c['activities'] = [x for x in activities if x['company_id'] == c['id']] # Aktiviteler firmaya bağlandı
 
     return comps, all_lics_joined, users_list
 
@@ -145,11 +160,10 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 e_addr = st.text_area("Adres", value=company.get('address', ''), key=f"edit_addr_{c_id}")
                 e_c_name = st.text_input("Yetkili Adı", value=curr_con[0]['full_name'] if curr_con else "", key=f"edit_cname_{c_id}")
                 e_c_phone = st.text_input("Telefon", value=curr_con[0]['phone'] if curr_con else "", key=f"edit_cphone_{c_id}")
-                e_note = st.text_area("Firma Notu", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}")
+                e_note = st.text_area("Firma Notu (Eski Sistem)", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}", help="Burası sabit firma notudur. Günlük görüşmeler için Görüntüleme modundaki Görüşme Geçmişini kullanın.")
             with col_e2:
                 e_file = st.file_uploader("📁 Yeni Dosya Ekle", key=f"edit_file_{c_id}")
                 
-                # YENİ: Sadece Adminlerin Görebileceği Dosya Silme Alanı
                 if st.session_state.user_role == "admin" and company.get('company_files'):
                     st.markdown("---")
                     st.write("🗑️ **Mevcut Dosyaları Sil**")
@@ -313,7 +327,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 cleanup_edit_state(c_id)
                 st.rerun()
 
-    # ================= 2. NORMAL GÖRÜNTÜLEME MODU =================
+    # ================= 2. NORMAL GÖRÜNTÜLEME MODU (CRM EKRANI) =================
     else:
         with st.expander(f"🏢 {company['name'].upper()} Detayları", expanded=varsayilan_acik):
             if st.session_state.user_role == "admin" and company.get("last_edited_by"):
@@ -324,20 +338,52 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
             col_info, col_lic = st.columns(2)
             
             with col_info:
-                st.subheader("📞 İletişim & Notlar", anchor=False)
+                st.subheader("📞 İletişim & CRM", anchor=False)
                 for c in company.get('contacts', []): st.write(f"👤 **{c['full_name']}**: {c['phone']}")
                 st.write(f"📍 {company.get('address', '-')}")
-                for n in company.get('company_notes', []): st.info(f"**Düzenleyen ({n['author']})**: {n['note']}")
                 
-                sct_list = [l for l in lic_res if l['software_type'].startswith('solidcam_deneme:')]
-                if sct_list:
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    st.subheader("⏳ SolidCAM Deneme Modülleri", anchor=False)
-                    for l in sct_list:
-                        mod = l['software_type'].split(":")[1].strip() if ":" in l['software_type'] else "Belirtilmedi"
-                        st.write(f"🔹 **Modüller:** {mod}")
-                        durum_yazdir("Deneme Bitişi", l.get('trial_date'))
-            
+                # Eski tip sabit not
+                for n in company.get('company_notes', []): st.caption(f"*Sabit Not:* {n['note']}")
+                
+                # --- YENİ: CRM GÖRÜŞME GEÇMİŞİ (TIMELINE) ---
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.subheader("🗓️ Görüşme Geçmişi", anchor=False)
+                
+                # Hızlı Aktivite Ekleme Alanı
+                with st.expander("➕ Hızlı Görüşme/Not Ekle"):
+                    with st.form(f"form_act_{c_id}", clear_on_submit=True):
+                        a_type = st.selectbox("Görüşme Türü", ["📞 Telefon Arandı", "✉️ E-posta Gönderildi", "🤝 Toplantı Yapıldı", "📝 Ek Not"])
+                        a_date = st.date_input("Tarih", datetime.now().date())
+                        a_note = st.text_area("Görüşme Detayları", placeholder="Müşteri ne dedi? Fiyat ne verildi?")
+                        if st.form_submit_button("Aktiviteyi Kaydet", use_container_width=True):
+                            if a_note:
+                                try:
+                                    supabase.table("company_activities").insert({
+                                        "company_id": c_id, "activity_type": a_type, 
+                                        "activity_date": str(a_date), "note": a_note, 
+                                        "author": st.session_state.current_user
+                                    }).execute()
+                                    st.cache_data.clear()
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error("Veritabanı hatası! Supabase'de 'company_activities' tablosunu oluşturduğundan emin ol.")
+                            else:
+                                st.warning("Lütfen bir not girin!")
+
+                # Timeline Görüntüleme
+                aktiviteler = company.get('activities', [])
+                if aktiviteler:
+                    for act in aktiviteler:
+                        # Görsel Timeline Kutucuğu
+                        st.markdown(f"""
+                        <div class="timeline-box">
+                            <small style="color:#aaa;">🗓️ <b>{act['activity_date']}</b> | 👤 {act['author'].capitalize()} | {act['activity_type']}</small><br>
+                            <span style="font-size: 15px;">{act['note']}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.caption("Henüz bir görüşme kaydı bulunmuyor.")
+
             with col_lic:
                 st.subheader("🔑 Lisanslar", anchor=False)
                 if lic_res:
@@ -361,16 +407,26 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 else:
                     st.warning("Lisans kaydı yok.")
                 
+                # Deneme Modülleri
+                sct_list = [l for l in lic_res if l['software_type'].startswith('solidcam_deneme:')]
+                if sct_list:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    st.subheader("⏳ SolidCAM Deneme Modülleri", anchor=False)
+                    for l in sct_list:
+                        mod = l['software_type'].split(":")[1].strip() if ":" in l['software_type'] else "Belirtilmedi"
+                        st.write(f"🔹 **Modüller:** {mod}")
+                        durum_yazdir("Deneme Bitişi", l.get('trial_date'))
+                
                 st.subheader("📁 Dosyalar", anchor=False)
                 for f in company.get('company_files', []): st.link_button(f"📦 {f['file_name']}", f['file_url'])
 
             st.markdown("---")
             b1, b2, b3, _ = st.columns([1, 1, 1.5, 2.5])
-            if b1.button("✏️ Düzenle", key=f"e_{suffix}_{c_id}"):
+            if b1.button("✏️ Lisans/Firma Düzenle", key=f"e_{suffix}_{c_id}"):
                 st.session_state.editing_id = c_id
                 st.rerun()
                 
-            if b2.button("🗑️ Sil", key=f"d_{suffix}_{c_id}"):
+            if b2.button("🗑️ Firmayı Sil", key=f"d_{suffix}_{c_id}"):
                 supabase.table("companies").delete().eq("id", c_id).execute()
                 st.cache_data.clear() 
                 st.rerun()
@@ -420,8 +476,11 @@ if tum_lisanslar_data:
 
 with st.sidebar:
     st.header(f"👤 {st.session_state.current_user.upper()}", anchor=False)
-
-    # --- YENİ: KULLANICI KENDİ ŞİFRESİNİ DEĞİŞTİRİYOR ---
+    if st.button("🚪 Çıkış Yap", use_container_width=True):
+        st.session_state.logged_in = False
+        st.cache_data.clear()
+        st.rerun()
+        
     with st.expander("🔑 Şifremi Değiştir"):
         with st.form("sifre_degistir_form"):
             yeni_sifre = st.text_input("Yeni Şifreni Yaz", type="password")
@@ -434,10 +493,6 @@ with st.sidebar:
                     st.success("Şifren kriptolanıp güncellendi!")
                     st.cache_data.clear()
 
-    if st.button("🚪 Çıkış Yap", use_container_width=True):
-        st.session_state.logged_in = False
-        st.cache_data.clear()
-        st.rerun()
     if uyarilar:
         st.warning("🔔 **KRİTİK UYARILAR**")
         for u in uyarilar: st.write(u)
@@ -493,7 +548,7 @@ tabs = st.tabs(tab_names)
 
 # TAB 1: SORGULA
 with tabs[0]:
-    sq = st.text_input("Şirket adı:", "").lower()
+    sq = st.text_input("Şirket adı ara:", "").lower()
     if sq:
         bulunanlar = [c for c in tum_firmalar_data if sq in c['name'].lower()]
         if bulunanlar:
@@ -641,14 +696,12 @@ if st.session_state.user_role == "admin":
     with tabs[3]:
         st.subheader("👥 Mevcut Kullanıcılar", anchor=False)
         for u in tum_kullanicilar:
-            # --- YENİ: KULLANICI LİSTESİ EXPANDER (KAPALI KUTU) OLDU ---
             with st.expander(f"👤 {u['users']} (Yetki: {u['role']})"):
                 st.write("🔑 Şifre: `🔒 Gizli (Hash)`")
                 
                 if u['users'] != st.session_state.current_user:
                     c_islem1, c_islem2 = st.columns(2)
                     
-                    # --- 1. ŞİFRE SIFIRLAMA ALANI ---
                     with c_islem1:
                         st.markdown("🔄 **Şifreyi Sıfırla**")
                         gecici_sifre = st.text_input("Geçici Şifre Belirle", key=f"temp_pw_{u['id']}", type="password")
@@ -661,7 +714,6 @@ if st.session_state.user_role == "admin":
                                 st.cache_data.clear()
                                 st.success(f"Başarılı! Kullanıcıya şu şifreyi ver: {gecici_sifre}")
                     
-                    # --- 2. KULLANICI SİLME ALANI ---
                     with c_islem2:
                         st.markdown("🗑️ **Kullanıcıyı Sil**")
                         if st.button("Hesabı Tamamen Sil", key=f"del_user_{u['id']}", type="primary"):
@@ -684,7 +736,6 @@ if st.session_state.user_role == "admin":
                 elif len(up) < 3:
                     st.warning("Şifre en az 3 karakter olmalıdır.")
                 else:
-                    # --- YENİ: KAYIT OLURKEN ŞİFRE HASHLENİYOR ---
                     hashli_yeni_hesap_sifresi = sifre_hashle(up)
                     supabase.table("users").insert({"users": un, "password": hashli_yeni_hesap_sifresi, "role": ur}).execute()
                     st.cache_data.clear()
