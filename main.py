@@ -518,15 +518,49 @@ m4.metric("🚨 Kritik Uyarılar", len(uyarilar))
 
 # --- YENİ: SATIŞ HUNİSİ GRAFİĞİ EKLENDİ ---
 st.markdown("### 🎯 Satış Hunisi & Müşteri Durumları")
-status_counts = {s: 0 for s in status_options}
-for c in tum_firmalar_data:
-    s = c.get('status')
-    if s not in status_counts: s = "🔵 Potansiyel"
-    status_counts[s] += 1
+g_funnel, g_pie = st.columns([1.5, 1])
 
-df_funnel = pd.DataFrame(list(status_counts.items()), columns=['Durum', 'Firma Sayısı'])
-fig_funnel = px.funnel(df_funnel, x='Firma Sayısı', y='Durum')
-st.plotly_chart(fig_funnel, use_container_width=True, config={'displayModeBar': False})
+with g_funnel:
+    # --- YENİ EFSANE TASARIMLI HUNİ GRAFİĞİ ---
+    status_counts = {s: 0 for s in status_options}
+    for c in tum_firmalar_data:
+        s = c.get('status')
+        if s not in status_counts: s = "🔵 Potansiyel"
+        status_counts[s] += 1
+    
+    df_funnel = pd.DataFrame(list(status_counts.items()), columns=['Durum', 'Firma Sayısı'])
+    
+    # Emojilere uygun özel renk paleti
+    renkler = {
+        "🔵 Potansiyel": "#3b82f6",       # Canlı Mavi
+        "🟡 Görüşülüyor": "#f59e0b",      # Canlı Sarı
+        "🟢 Aktif Müşteri": "#10b981",    # Canlı Yeşil
+        "🔴 Pasif/Reddedildi": "#ef4444"   # Canlı Kırmızı
+    }
+    
+    fig_funnel = px.funnel(df_funnel, x='Firma Sayısı', y='Durum', color='Durum', color_discrete_map=renkler)
+    
+    # Tasarım Makyajı: Kaba çizgileri sil, opaklığı ayarla
+    fig_funnel.update_traces(
+        opacity=0.9,
+        marker=dict(line=dict(width=0)), # Kaba dış çizgileri yok eder
+        textposition='inside',
+        textinfo='value',
+        hovertemplate='<b>%{y}</b><br>Firma Sayısı: %{x}<extra></extra>'
+    )
+    
+    # Arka planı şeffaf yapıp boşlukları daraltıyoruz
+    fig_funnel.update_layout(
+        showlegend=False,
+        margin=dict(t=20, l=0, r=0, b=0),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)"
+    )
+    
+    st.plotly_chart(fig_funnel, use_container_width=True, config={'displayModeBar': False})
+
+with g_pie:
+# (Buradan sonrası senin kodundaki pie grafikleriyle aynı devam ediyor...)
 
 st.markdown("### 📊 Genel Dağılım İstatistikleri")
 g1, g2 = st.columns(2)
