@@ -113,7 +113,6 @@ sc_module_options = [
     "Tornalama", "Gelişmiş Mill-Turn", "Kayar Otomat (Swiss-Type)", "Solid Probe"
 ]
 
-# YENİ: CRM DURUM SEÇENEKLERİ
 status_options = ["🔵 Potansiyel", "🟡 Görüşülüyor", "🟢 Aktif Müşteri", "🔴 Pasif/Reddedildi"]
 
 # --- 🚀 VERİ ÖNBELLEKLEME ---
@@ -156,7 +155,6 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
             curr_note = company.get('company_notes', [])
             curr_lics = company.get('licenses', [])
             
-            # ÜST BİLGİLER BÖLÜMÜ GÜNCELLENDİ
             col_e1, col_e2, col_e3 = st.columns([2, 2, 1.5])
             with col_e1:
                 e_name = st.text_input("Firma Adı", value=company['name'], key=f"edit_name_{c_id}")
@@ -164,12 +162,11 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
             with col_e2:
                 e_c_name = st.text_input("Yetkili Adı", value=curr_con[0]['full_name'] if curr_con else "", key=f"edit_cname_{c_id}")
                 e_c_phone = st.text_input("Telefon", value=curr_con[0]['phone'] if curr_con else "", key=f"edit_cphone_{c_id}")
-                e_note = text_area_val = st.text_area("Firma Sabit Notu", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}")
+                e_note = st.text_area("Firma Sabit Notu", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}")
             with col_e3:
                 e_status = st.selectbox("🎯 Müşteri Durumu", status_options, index=status_options.index(mevcut_durum), key=f"edit_status_{c_id}")
                 e_file = st.file_uploader("📁 Yeni Dosya Ekle", key=f"edit_file_{c_id}")
                 
-                # YENİ: Sadece Adminlerin Görebileceği Dosya Silme Alanı
                 if st.session_state.user_role == "admin" and company.get('company_files'):
                     st.markdown("---")
                     st.write("🗑️ **Mevcut Dosyaları Sil**")
@@ -334,7 +331,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 cleanup_edit_state(c_id)
                 st.rerun()
 
-    # ================= 2. NORMAL GÖRÜNTÜLEME MODU =================
+    # ================= 2. NORMAL GÖRÜNTÜLEME MODU (CRM) =================
     else:
         with st.expander(f"🏢 {company['name'].upper()} - {mevcut_durum}", expanded=varsayilan_acik):
             if st.session_state.user_role == "admin" and company.get("last_edited_by"):
@@ -486,7 +483,6 @@ if tum_lisanslar_data:
 with st.sidebar:
     st.header(f"👤 {st.session_state.current_user.upper()}", anchor=False)
 
-    # KENDİ ŞİFRENİ DEĞİŞTİRME (HASH KULLANARAK)
     with st.expander("🔑 Şifremi Değiştir"):
         with st.form("sifre_degistir_form"):
             yeni_sifre = st.text_input("Yeni Şifreni Yaz", type="password")
@@ -508,7 +504,7 @@ with st.sidebar:
         for u in uyarilar: st.write(u)
 
 # --- ANA DASHBOARD KUTULARI VE GRAFİKLER ---
-st.title("📂 Şirket Lisans & CRM Paneli", anchor=False)
+st.title("📂 Şirket Lisans & Yönetim Paneli", anchor=False)
 
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("🏢 Toplam Firma", len(tum_firmalar_data))
@@ -516,56 +512,47 @@ m2.metric("🛠️ SolidWorks Sayısı", sum(1 for l in tum_lisanslar_data if l[
 m3.metric("⚙️ SolidCAM Sayısı", sum(1 for l in tum_lisanslar_data if l['software_type'].startswith('solidcam:')))
 m4.metric("🚨 Kritik Uyarılar", len(uyarilar))
 
-# --- YENİ: SATIŞ HUNİSİ GRAFİĞİ EKLENDİ ---
-st.markdown("### 🎯 Satış Hunisi & Müşteri Durumları")
+# --- YENİ TASARIM: ŞIK SATIŞ HUNİSİ (PIPELINE) EKLENDİ ---
+st.markdown("### 🎯 Satış Hunisi (Pipeline)")
 g_funnel, g_pie = st.columns([1.5, 1])
 
 with g_funnel:
-    # --- YENİ EFSANE TASARIMLI HUNİ GRAFİĞİ ---
     status_counts = {s: 0 for s in status_options}
     for c in tum_firmalar_data:
         s = c.get('status')
         if s not in status_counts: s = "🔵 Potansiyel"
         status_counts[s] += 1
-    
+
     df_funnel = pd.DataFrame(list(status_counts.items()), columns=['Durum', 'Firma Sayısı'])
-    
-    # Emojilere uygun özel renk paleti
+
     renkler = {
-        "🔵 Potansiyel": "#3b82f6",       # Canlı Mavi
-        "🟡 Görüşülüyor": "#f59e0b",      # Canlı Sarı
-        "🟢 Aktif Müşteri": "#10b981",    # Canlı Yeşil
-        "🔴 Pasif/Reddedildi": "#ef4444"   # Canlı Kırmızı
+        "🔵 Potansiyel": "#3b82f6",       
+        "🟡 Görüşülüyor": "#f59e0b",      
+        "🟢 Aktif Müşteri": "#10b981",    
+        "🔴 Pasif/Reddedildi": "#ef4444"   
     }
-    
+
     fig_funnel = px.funnel(df_funnel, x='Firma Sayısı', y='Durum', color='Durum', color_discrete_map=renkler)
-    
-    # Tasarım Makyajı: Kaba çizgileri sil, opaklığı ayarla
+
     fig_funnel.update_traces(
         opacity=0.9,
-        marker=dict(line=dict(width=0)), # Kaba dış çizgileri yok eder
+        marker=dict(line=dict(width=0)), 
         textposition='inside',
         textinfo='value',
         hovertemplate='<b>%{y}</b><br>Firma Sayısı: %{x}<extra></extra>'
     )
-    
-    # Arka planı şeffaf yapıp boşlukları daraltıyoruz
+
     fig_funnel.update_layout(
         showlegend=False,
         margin=dict(t=20, l=0, r=0, b=0),
         plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)"
+        paper_bgcolor="rgba(0,0,0,0)",
+        height=300
     )
-    
+
     st.plotly_chart(fig_funnel, use_container_width=True, config={'displayModeBar': False})
 
 with g_pie:
-# (Buradan sonrası senin kodundaki pie grafikleriyle aynı devam ediyor...)
-
-st.markdown("### 📊 Genel Dağılım İstatistikleri")
-g1, g2 = st.columns(2)
-
-with g1:
     sw_counts = {}
     for l in tum_lisanslar_data:
         if "solidworks" in l['software_type']:
@@ -578,7 +565,10 @@ with g1:
     else:
         st.info("Henüz SolidWorks verisi girilmemiş.")
 
-with g2:
+st.markdown("### 📊 Genel Dağılım İstatistikleri")
+g1, g2 = st.columns(2)
+
+with g1:
     sc_mods = {}
     for l in tum_lisanslar_data:
         if l['software_type'].startswith('solidcam:'):
@@ -594,6 +584,9 @@ with g2:
         st.plotly_chart(fig_sc, use_container_width=True, config={'displayModeBar': False})
     else:
         st.info("Henüz SolidCAM modül verisi girilmemiş.")
+
+with g2:
+    st.write("") # Görsel denge için boşluk
 
 st.markdown("---")
 
@@ -653,7 +646,6 @@ with tabs[2]:
             c_t = st.text_input("Yetkili Telefon", key=f"new_c_t_{fk}")
             f_o = st.text_input("Sabit Not", key=f"new_f_o_{fk}")
         with c3:
-            # YENİ: Form Eklerken Durum Seçimi
             f_s = st.selectbox("🎯 Müşteri Durumu", status_options, key=f"new_f_s_{fk}")
             u_f = st.file_uploader("Dosya Yükle", key=f"new_u_f_{fk}")
             
@@ -756,14 +748,12 @@ if st.session_state.user_role == "admin":
     with tabs[3]:
         st.subheader("👥 Mevcut Kullanıcılar", anchor=False)
         for u in tum_kullanicilar:
-            # --- KULLANICI LİSTESİ EXPANDER (KAPALI KUTU) ---
             with st.expander(f"👤 {u['users']} (Yetki: {u['role']})"):
                 st.write("🔑 Şifre: `🔒 Gizli (Hash)`")
                 
                 if u['users'] != st.session_state.current_user:
                     c_islem1, c_islem2 = st.columns(2)
                     
-                    # ŞİFRE SIFIRLAMA ALANI (Çilingir)
                     with c_islem1:
                         st.markdown("🔄 **Şifreyi Sıfırla**")
                         gecici_sifre = st.text_input("Geçici Şifre Belirle", key=f"temp_pw_{u['id']}", type="password")
@@ -776,7 +766,6 @@ if st.session_state.user_role == "admin":
                                 st.cache_data.clear()
                                 st.success(f"Başarılı! Kullanıcıya şu şifreyi ver: {gecici_sifre}")
                     
-                    # KULLANICI SİLME ALANI
                     with c_islem2:
                         st.markdown("🗑️ **Kullanıcıyı Sil**")
                         if st.button("Hesabı Tamamen Sil", key=f"del_user_{u['id']}", type="primary"):
@@ -799,7 +788,6 @@ if st.session_state.user_role == "admin":
                 elif len(up) < 3:
                     st.warning("Şifre en az 3 karakter olmalıdır.")
                 else:
-                    # KAYIT OLURKEN ŞİFRE HASHLENİYOR
                     hashli_yeni_hesap_sifresi = sifre_hashle(up)
                     supabase.table("users").insert({"users": un, "password": hashli_yeni_hesap_sifresi, "role": ur}).execute()
                     st.cache_data.clear()
