@@ -113,6 +113,9 @@ sc_module_options = [
     "Tornalama", "Gelişmiş Mill-Turn", "Kayar Otomat (Swiss-Type)", "Solid Probe"
 ]
 
+# YENİ: CRM DURUM SEÇENEKLERİ
+status_options = ["🔵 Potansiyel", "🟡 Görüşülüyor", "🟢 Aktif Müşteri", "🔴 Pasif/Reddedildi"]
+
 # --- 🚀 VERİ ÖNBELLEKLEME ---
 @st.cache_data(show_spinner=False, ttl=600)
 def verileri_cek_ve_birlestir():
@@ -144,6 +147,7 @@ tum_firmalar_data, tum_lisanslar_data, tum_kullanicilar = verileri_cek_ve_birles
 # --- ORTAK GÖRÜNTÜLEME VE DÜZENLEME FONKSİYONU ---
 def firma_detay_goster(company, suffix, varsayilan_acik=False):
     c_id = company['id']
+    mevcut_durum = company.get('status') if company.get('status') in status_options else "🔵 Potansiyel"
     
     # ================= 1. DÜZENLEME MODU =================
     if st.session_state.editing_id == c_id:
@@ -152,14 +156,17 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
             curr_note = company.get('company_notes', [])
             curr_lics = company.get('licenses', [])
             
-            col_e1, col_e2 = st.columns(2)
+            # ÜST BİLGİLER BÖLÜMÜ GÜNCELLENDİ
+            col_e1, col_e2, col_e3 = st.columns([2, 2, 1.5])
             with col_e1:
                 e_name = st.text_input("Firma Adı", value=company['name'], key=f"edit_name_{c_id}")
                 e_addr = st.text_area("Adres", value=company.get('address', ''), key=f"edit_addr_{c_id}")
+            with col_e2:
                 e_c_name = st.text_input("Yetkili Adı", value=curr_con[0]['full_name'] if curr_con else "", key=f"edit_cname_{c_id}")
                 e_c_phone = st.text_input("Telefon", value=curr_con[0]['phone'] if curr_con else "", key=f"edit_cphone_{c_id}")
-                e_note = st.text_area("Firma Sabit Notu", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}")
-            with col_e2:
+                e_note = text_area_val = st.text_area("Firma Sabit Notu", value=curr_note[0]['note'] if curr_note else "", key=f"edit_note_{c_id}")
+            with col_e3:
+                e_status = st.selectbox("🎯 Müşteri Durumu", status_options, index=status_options.index(mevcut_durum), key=f"edit_status_{c_id}")
                 e_file = st.file_uploader("📁 Yeni Dosya Ekle", key=f"edit_file_{c_id}")
                 
                 # YENİ: Sadece Adminlerin Görebileceği Dosya Silme Alanı
@@ -266,6 +273,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 degisenler = []
                 if e_name.lower() != company['name'].lower(): degisenler.append("Firma Adı")
                 if e_addr != company.get('address', ''): degisenler.append("Adres")
+                if e_status != mevcut_durum: degisenler.append(f"Durum ({e_status})")
                 if curr_con and e_c_name != curr_con[0]['full_name']: degisenler.append("Yetkili Adı")
                 if curr_con and e_c_phone != curr_con[0]['phone']: degisenler.append("Telefon")
                 if curr_note and e_note != curr_note[0]['note']: degisenler.append("Firma Notu")
@@ -275,7 +283,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 detay_metni = ", ".join(degisenler) + " güncellendi."
                 
                 supabase.table("companies").update({
-                    "name": e_name.lower(), "address": e_addr,
+                    "name": e_name.lower(), "address": e_addr, "status": e_status,
                     "last_edited_by": st.session_state.current_user,
                     "last_edit_details": detay_metni
                 }).eq("id", c_id).execute()
@@ -326,9 +334,9 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 cleanup_edit_state(c_id)
                 st.rerun()
 
-    # ================= 2. NORMAL GÖRÜNTÜLEME MODU (CRM) =================
+    # ================= 2. NORMAL GÖRÜNTÜLEME MODU =================
     else:
-        with st.expander(f"🏢 {company['name'].upper()} Detayları", expanded=varsayilan_acik):
+        with st.expander(f"🏢 {company['name'].upper()} - {mevcut_durum}", expanded=varsayilan_acik):
             if st.session_state.user_role == "admin" and company.get("last_edited_by"):
                 yapilan_degisiklikler = company.get('last_edit_details', 'Belirtilmedi')
                 st.info(f"🕵️‍♂️ **Admin Log:** Son işlem yapan: **{company['last_edited_by']}** \n📝 **Özet:** {yapilan_degisiklikler}")
@@ -338,11 +346,11 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
             
             with col_info:
                 st.subheader("📞 İletişim & CRM", anchor=False)
+                st.write(f"🏷️ **Müşteri Durumu:** {mevcut_durum}")
                 for c in company.get('contacts', []): st.write(f"👤 **{c['full_name']}**: {c['phone']}")
                 st.write(f"📍 {company.get('address', '-')}")
                 for n in company.get('company_notes', []): st.caption(f"**Sabit Not ({n['author']}):** {n['note']}")
                 
-                # --- YENİ: GÖRÜŞME GEÇMİŞİ (TIMELINE) ---
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.subheader("🗓️ Görüşme Geçmişi", anchor=False)
                 
@@ -500,13 +508,25 @@ with st.sidebar:
         for u in uyarilar: st.write(u)
 
 # --- ANA DASHBOARD KUTULARI VE GRAFİKLER ---
-st.title("📂 Şirket Lisans & Yönetim Paneli", anchor=False)
+st.title("📂 Şirket Lisans & CRM Paneli", anchor=False)
 
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("🏢 Toplam Firma", len(tum_firmalar_data))
 m2.metric("🛠️ SolidWorks Sayısı", sum(1 for l in tum_lisanslar_data if l['software_type'].startswith('solidworks')))
 m3.metric("⚙️ SolidCAM Sayısı", sum(1 for l in tum_lisanslar_data if l['software_type'].startswith('solidcam:')))
 m4.metric("🚨 Kritik Uyarılar", len(uyarilar))
+
+# --- YENİ: SATIŞ HUNİSİ GRAFİĞİ EKLENDİ ---
+st.markdown("### 🎯 Satış Hunisi & Müşteri Durumları")
+status_counts = {s: 0 for s in status_options}
+for c in tum_firmalar_data:
+    s = c.get('status')
+    if s not in status_counts: s = "🔵 Potansiyel"
+    status_counts[s] += 1
+
+df_funnel = pd.DataFrame(list(status_counts.items()), columns=['Durum', 'Firma Sayısı'])
+fig_funnel = px.funnel(df_funnel, x='Firma Sayısı', y='Durum')
+st.plotly_chart(fig_funnel, use_container_width=True, config={'displayModeBar': False})
 
 st.markdown("### 📊 Genel Dağılım İstatistikleri")
 g1, g2 = st.columns(2)
@@ -564,6 +584,7 @@ with tabs[1]:
             df = pd.DataFrame([
                 {
                     "Firma Adı": (l.get('companies', {}).get('name', 'Bilinmeyen') if l.get('companies') else 'Bilinmeyen').upper(),
+                    "Müşteri Durumu": next((c.get('status', '🔵 Potansiyel') for c in tum_firmalar_data if c['id'] == l['company_id']), '🔵 Potansiyel'),
                     "Yazılım Tipi": l['software_type'].split(":")[0].upper().replace("_", " "),
                     "Lisans/Modül Tipi": l['software_type'].split(":")[1].strip() if ":" in l['software_type'] else "-",
                     "Lisans Anahtarı": l['serial_number'],
@@ -589,14 +610,17 @@ with tabs[2]:
     with st.container():
         fk = st.session_state.form_reset_key 
         
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns([2, 2, 1])
         with c1:
             f_n = st.text_input("Firma Adı*", key=f"new_f_n_{fk}")
             f_a = st.text_area("Adres", key=f"new_f_a_{fk}")
+        with c2:
             c_p = st.text_input("Yetkili Adı", key=f"new_c_p_{fk}")
             c_t = st.text_input("Yetkili Telefon", key=f"new_c_t_{fk}")
-        with c2:
-            f_o = st.text_area("Not", key=f"new_f_o_{fk}")
+            f_o = st.text_input("Sabit Not", key=f"new_f_o_{fk}")
+        with c3:
+            # YENİ: Form Eklerken Durum Seçimi
+            f_s = st.selectbox("🎯 Müşteri Durumu", status_options, key=f"new_f_s_{fk}")
             u_f = st.file_uploader("Dosya Yükle", key=f"new_u_f_{fk}")
             
         st.markdown("---")
@@ -647,7 +671,7 @@ with tabs[2]:
                     st.error(f"⚠️ '{f_n.upper()}' isimli firma sistemde zaten kayıtlı! Lütfen 'Tüm Firmalar' sekmesinden mevcut firmayı düzenleyin.")
                 else:
                     t_id = supabase.table("companies").insert({
-                        "name": f_n.lower(), "address": f_a,
+                        "name": f_n.lower(), "address": f_a, "status": f_s,
                         "last_edited_by": st.session_state.current_user,
                         "last_edit_details": "Sistemde ilk kez oluşturuldu."
                     }).execute().data[0]['id']
