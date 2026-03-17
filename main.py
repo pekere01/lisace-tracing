@@ -5,7 +5,8 @@ from datetime import datetime
 import pandas as pd
 import io
 import re
-import plotly.express as px  
+import plotly.express as px
+import hashlib # --- YENİ: Şifreleme (Hashing) Kütüphanesi ---
 
 # --- BAĞLANTI AYARLARI (SECRETS KULLANIMI) ---
 URL = st.secrets["SUPABASE_URL"]
@@ -29,6 +30,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- ⚙️ SİBER GÜVENLİK: ŞİFRELEME FONKSİYONU ---
+def sifre_hashle(sifre):
+    return hashlib.sha256(sifre.encode('utf-8')).hexdigest()
+
 # --- 🔐 GİRİŞ SİSTEMİ ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -41,7 +46,10 @@ if not st.session_state.logged_in:
         k_adi = st.text_input("Kullanıcı Adı")
         sifre = st.text_input("Şifre", type="password")
         if st.form_submit_button("Sisteme Giriş Yap", use_container_width=True):
-            user_check = supabase.table("users").select("*").eq("users", k_adi).eq("password", sifre).execute()
+            # --- YENİ: Girilen şifreyi hashleyip veritabanındaki ile karşılaştırıyoruz ---
+            hashli_giris = sifre_hashle(sifre)
+            user_check = supabase.table("users").select("*").eq("users", k_adi).eq("password", hashli_giris).execute()
+            
             if user_check.data:
                 st.session_state.logged_in = True
                 st.session_state.current_user = user_check.data[0]['users']
@@ -319,7 +327,7 @@ def firma_detay_goster(company, suffix, varsayilan_acik=False):
                 st.subheader("📞 İletişim & Notlar", anchor=False)
                 for c in company.get('contacts', []): st.write(f"👤 **{c['full_name']}**: {c['phone']}")
                 st.write(f"📍 {company.get('address', '-')}")
-                for n in company.get('company_notes', []): st.info(f"**Yazan/Düzenleyen ({n['author']})**: {n['note']}")
+                for n in company.get('company_notes', []): st.info(f"**Düzenleyen ({n['author']})**: {n['note']}")
                 
                 sct_list = [l for l in lic_res if l['software_type'].startswith('solidcam_deneme:')]
                 if sct_list:
@@ -412,6 +420,20 @@ if tum_lisanslar_data:
 
 with st.sidebar:
     st.header(f"👤 {st.session_state.current_user.upper()}", anchor=False)
+
+    # --- YENİ: KULLANICI KENDİ ŞİFRESİNİ DEĞİŞTİRİYOR ---
+    with st.expander("🔑 Şifremi Değiştir"):
+        with st.form("sifre_degistir_form"):
+            yeni_sifre = st.text_input("Yeni Şifreni Yaz", type="password")
+            if st.form_submit_button("Güncelle", use_container_width=True):
+                if len(yeni_sifre) < 3:
+                    st.error("Şifre en az 3 hane olmalı!")
+                else:
+                    hashli_yeni_sifre = sifre_hashle(yeni_sifre)
+                    supabase.table("users").update({"password": hashli_yeni_sifre}).eq("users", st.session_state.current_user).execute()
+                    st.success("Şifren kriptolanıp güncellendi!")
+                    st.cache_data.clear()
+
     if st.button("🚪 Çıkış Yap", use_container_width=True):
         st.session_state.logged_in = False
         st.cache_data.clear()
@@ -619,14 +641,14 @@ if st.session_state.user_role == "admin":
     with tabs[3]:
         st.subheader("👥 Mevcut Kullanıcılar", anchor=False)
         for u in tum_kullanicilar:
-            # Kullanıcı işlemleri için açılır kutu (expander) yapıyoruz ki ortalık karışmasın
+            # --- YENİ: KULLANICI LİSTESİ EXPANDER (KAPALI KUTU) OLDU ---
             with st.expander(f"👤 {u['users']} (Yetki: {u['role']})"):
                 st.write("🔑 Şifre: `🔒 Gizli (Hash)`")
                 
                 if u['users'] != st.session_state.current_user:
                     c_islem1, c_islem2 = st.columns(2)
                     
-                    # 1. Şifre Sıfırlama Çilingir Alanı
+                    # --- 1. ŞİFRE SIFIRLAMA ALANI ---
                     with c_islem1:
                         st.markdown("🔄 **Şifreyi Sıfırla**")
                         gecici_sifre = st.text_input("Geçici Şifre Belirle", key=f"temp_pw_{u['id']}", type="password")
@@ -639,7 +661,7 @@ if st.session_state.user_role == "admin":
                                 st.cache_data.clear()
                                 st.success(f"Başarılı! Kullanıcıya şu şifreyi ver: {gecici_sifre}")
                     
-                    # 2. Silme Alanı
+                    # --- 2. KULLANICI SİLME ALANI ---
                     with c_islem2:
                         st.markdown("🗑️ **Kullanıcıyı Sil**")
                         if st.button("Hesabı Tamamen Sil", key=f"del_user_{u['id']}", type="primary"):
@@ -662,7 +684,7 @@ if st.session_state.user_role == "admin":
                 elif len(up) < 3:
                     st.warning("Şifre en az 3 karakter olmalıdır.")
                 else:
-                    # Yeni kullanıcı eklenirken şifresi hashleniyor
+                    # --- YENİ: KAYIT OLURKEN ŞİFRE HASHLENİYOR ---
                     hashli_yeni_hesap_sifresi = sifre_hashle(up)
                     supabase.table("users").insert({"users": un, "password": hashli_yeni_hesap_sifresi, "role": ur}).execute()
                     st.cache_data.clear()
