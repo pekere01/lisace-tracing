@@ -617,21 +617,38 @@ with tabs[2]:
 # TAB 4: KULLANICI YÖNETİMİ (Sadece Admin Görür)
 if st.session_state.user_role == "admin":
     with tabs[3]:
-        
         st.subheader("👥 Mevcut Kullanıcılar", anchor=False)
         for u in tum_kullanicilar:
-            col_u1, col_u2, col_u3 = st.columns([2, 2, 1])
-            col_u1.write(f"👤 **{u['users']}**")
-            col_u2.write(f"Yetki: `{u['role']}`")
-            
-            if u['users'] != st.session_state.current_user:
-                if col_u3.button("🗑️ Sil", key=f"del_user_{u['id']}"):
-                    supabase.table("users").delete().eq("id", u['id']).execute()
-                    st.cache_data.clear()
-                    st.success(f"{u['users']} kullanıcısı silindi.")
-                    st.rerun()
-            else:
-                col_u3.write("*(Mevcut Oturum)*")
+            # Kullanıcı işlemleri için açılır kutu (expander) yapıyoruz ki ortalık karışmasın
+            with st.expander(f"👤 {u['users']} (Yetki: {u['role']})"):
+                st.write("🔑 Şifre: `🔒 Gizli (Hash)`")
+                
+                if u['users'] != st.session_state.current_user:
+                    c_islem1, c_islem2 = st.columns(2)
+                    
+                    # 1. Şifre Sıfırlama Çilingir Alanı
+                    with c_islem1:
+                        st.markdown("🔄 **Şifreyi Sıfırla**")
+                        gecici_sifre = st.text_input("Geçici Şifre Belirle", key=f"temp_pw_{u['id']}", type="password")
+                        if st.button("Şifreyi Güncelle", key=f"btn_reset_{u['id']}"):
+                            if len(gecici_sifre) < 3:
+                                st.error("Şifre en az 3 hane olmalı!")
+                            else:
+                                hashli_yeni = sifre_hashle(gecici_sifre)
+                                supabase.table("users").update({"password": hashli_yeni}).eq("id", u['id']).execute()
+                                st.cache_data.clear()
+                                st.success(f"Başarılı! Kullanıcıya şu şifreyi ver: {gecici_sifre}")
+                    
+                    # 2. Silme Alanı
+                    with c_islem2:
+                        st.markdown("🗑️ **Kullanıcıyı Sil**")
+                        if st.button("Hesabı Tamamen Sil", key=f"del_user_{u['id']}", type="primary"):
+                            supabase.table("users").delete().eq("id", u['id']).execute()
+                            st.cache_data.clear()
+                            st.success(f"{u['users']} silindi.")
+                            st.rerun()
+                else:
+                    st.info("*(Bu senin kendi admin hesabın. Şifreni soldaki yan menüden değiştirebilirsin.)*")
                 
         st.markdown("---")
         st.subheader("➕ Yeni Kullanıcı Ekle", anchor=False)
@@ -645,7 +662,9 @@ if st.session_state.user_role == "admin":
                 elif len(up) < 3:
                     st.warning("Şifre en az 3 karakter olmalıdır.")
                 else:
-                    supabase.table("users").insert({"users": un, "password": up, "role": ur}).execute()
+                    # Yeni kullanıcı eklenirken şifresi hashleniyor
+                    hashli_yeni_hesap_sifresi = sifre_hashle(up)
+                    supabase.table("users").insert({"users": un, "password": hashli_yeni_hesap_sifresi, "role": ur}).execute()
                     st.cache_data.clear()
                     st.success("Kullanıcı Eklendi!")
                     st.rerun()
