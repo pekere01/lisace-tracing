@@ -9,6 +9,10 @@ export type CompanyListItem = {
   contactPhone: string | null;
   licenseCount: number;
   hasCriticalLicense: boolean;
+  /** En yakın yenileme tarihine kalan gün (negatifse süresi geçmiş). Hiç lisans/tarih yoksa null. */
+  nearestRenewalDays: number | null;
+  /** Firmadaki lisans ailelerine göre adet dağılımı, ör. { solidworks: 4, solidcam: 2 }. */
+  familyCounts: Record<string, number>;
 };
 
 export async function getCompanyList(): Promise<CompanyListItem[]> {
@@ -18,23 +22,35 @@ export async function getCompanyList(): Promise<CompanyListItem[]> {
     await Promise.all([
       supabase.from("companies").select("id, name").order("name"),
       supabase.from("contacts").select("company_id, full_name, phone"),
-      supabase.from("licenses").select("company_id, sub_date, trial_date"),
+      supabase
+        .from("licenses")
+        .select("company_id, software_type, sub_date, trial_date"),
     ]);
 
   const contactByCompany = new Map(
     (contacts ?? []).map((c) => [c.company_id, c])
   );
 
-  const licenseStatsByCompany = new Map<number, { count: number; critical: boolean }>();
+  const licenseStatsByCompany = new Map<
+    number,
+    { count: number; critical: boolean; nearestDays: number | null; familyCounts: Record<string, number> }
+  >();
   for (const lic of licenses ?? []) {
     if (lic.company_id === null) continue;
     const stat = licenseStatsByCompany.get(lic.company_id) ?? {
       count: 0,
       critical: false,
+      nearestDays: null,
+      familyCounts: {},
     };
     stat.count++;
+    const { family } = parseSoftwareType(lic.software_type);
+    stat.familyCounts[family] = (stat.familyCounts[family] ?? 0) + 1;
     const days = daysRemaining(lic.sub_date ?? lic.trial_date);
     if (days !== null && days <= 30) stat.critical = true;
+    if (days !== null && (stat.nearestDays === null || days < stat.nearestDays)) {
+      stat.nearestDays = days;
+    }
     licenseStatsByCompany.set(lic.company_id, stat);
   }
 
@@ -48,6 +64,8 @@ export async function getCompanyList(): Promise<CompanyListItem[]> {
       contactPhone: contact?.phone ?? null,
       licenseCount: stats?.count ?? 0,
       hasCriticalLicense: stats?.critical ?? false,
+      nearestRenewalDays: stats?.nearestDays ?? null,
+      familyCounts: stats?.familyCounts ?? {},
     };
   });
 }

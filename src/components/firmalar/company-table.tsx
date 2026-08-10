@@ -11,82 +11,194 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Search, AlertTriangle, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { licenseStatus, STATUS_LABEL, STATUS_BADGE_CLASS } from "@/lib/dates";
 import type { CompanyListItem } from "@/lib/companies";
+
+const FAMILY_CHIP_CLASS: Record<string, string> = {
+  solidworks: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  solidcam: "bg-violet-500/15 text-violet-400 border-violet-500/30",
+};
+
+const FAMILY_ABBR: Record<string, string> = {
+  solidworks: "CAD",
+  solidcam: "CAM",
+  solidcam_deneme: "CAM",
+  cimatron: "CIM",
+};
+
+const TONE_BAR_CLASS: Record<string, string> = {
+  expired: "bg-destructive",
+  critical: "bg-destructive",
+  warning: "bg-amber-500",
+  active: "bg-emerald-500",
+};
+
+const FILTERS = ["Tümü", "SolidWorks", "SolidCAM", "30 gün içinde", "Süresi geçmiş"] as const;
+type Filter = (typeof FILTERS)[number];
 
 export function CompanyTable({ companies }: { companies: CompanyListItem[] }) {
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>("Tümü");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return companies;
-    return companies.filter((c) => c.name.toLowerCase().includes(q));
-  }, [companies, query]);
+    return companies.filter((c) => {
+      if (q && !c.name.toLowerCase().includes(q)) return false;
+      if (filter === "SolidWorks" && !c.familyCounts.solidworks) return false;
+      if (filter === "SolidCAM" && !c.familyCounts.solidcam) return false;
+      if (
+        filter === "30 gün içinde" &&
+        !(c.nearestRenewalDays !== null && c.nearestRenewalDays >= 0 && c.nearestRenewalDays <= 30)
+      )
+        return false;
+      if (filter === "Süresi geçmiş" && !(c.nearestRenewalDays !== null && c.nearestRenewalDays < 0))
+        return false;
+      return true;
+    });
+  }, [companies, query, filter]);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative max-w-sm">
-        <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Şirket adı ara..."
-          className="pl-8"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Şirket adı ara..."
+            className="pl-8"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFilter(f)}
+              className={cn(
+                "h-[30px] rounded-md border px-3 text-xs font-medium transition-colors",
+                filter === f
+                  ? "border-primary/45 bg-primary/15 text-primary"
+                  : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Firma Adı</TableHead>
+              <TableHead>Firma</TableHead>
               <TableHead>Yetkili</TableHead>
-              <TableHead className="text-right">Lisanslar</TableHead>
+              <TableHead>Lisanslar</TableHead>
+              <TableHead>En Yakın Yenileme</TableHead>
+              <TableHead className="text-right">Durum</TableHead>
               <TableHead className="w-8" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((c) => (
-                <TableRow key={c.id} className="group">
-                  <TableCell className="font-medium">
-                    <Link href={`/firmalar/${c.id}`} className="hover:underline">
-                      {c.name.toUpperCase()}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {c.contactName ? (
-                      <span>
-                        {c.contactName}
-                        {c.contactPhone && (
-                          <span className="text-xs"> · {c.contactPhone}</span>
-                        )}
-                      </span>
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="inline-flex items-center gap-1.5 tabular-nums">
-                      {c.hasCriticalLicense && (
-                        <AlertTriangle className="size-3.5 text-destructive" />
+              filtered.map((c) => {
+                const status = licenseStatus(c.nearestRenewalDays);
+                const toneClass = status ? TONE_BAR_CLASS[status] : "bg-border";
+                const pct =
+                  c.nearestRenewalDays === null
+                    ? 0
+                    : Math.max(
+                        4,
+                        Math.min(
+                          100,
+                          Math.round((1 - Math.min(Math.max(c.nearestRenewalDays, 0), 365) / 365) * 100)
+                        )
+                      );
+                return (
+                  <TableRow key={c.id} className="group">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2.5">
+                        <span className={cn("h-6 w-[3px] shrink-0 rounded-full", toneClass)} />
+                        <Link href={`/firmalar/${c.id}`} className="truncate hover:underline">
+                          {c.name.toUpperCase()}
+                        </Link>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {c.contactName ? (
+                        <span className="flex flex-col gap-0.5">
+                          <span className="text-foreground/90">{c.contactName}</span>
+                          {c.contactPhone && (
+                            <span className="font-mono text-xs text-muted-foreground">
+                              {c.contactPhone}
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        "—"
                       )}
-                      {c.licenseCount}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/firmalar/${c.id}`}>
-                      <ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {Object.entries(c.familyCounts).length === 0 ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : (
+                          Object.entries(c.familyCounts).map(([family, count]) => (
+                            <Badge
+                              key={family}
+                              variant="outline"
+                              className={cn(
+                                "px-1.5 py-0 font-mono text-[10px]",
+                                FAMILY_CHIP_CLASS[family] ?? "bg-muted text-muted-foreground border-border"
+                              )}
+                            >
+                              {FAMILY_ABBR[family] ?? family.slice(0, 3).toUpperCase()} ×{count}
+                            </Badge>
+                          ))
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {c.nearestRenewalDays === null ? (
+                        <span className="text-muted-foreground">—</span>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <span className="font-mono text-xs tabular-nums text-foreground/90">
+                            {c.nearestRenewalDays < 0
+                              ? `${Math.abs(c.nearestRenewalDays)} gün geçti`
+                              : `${c.nearestRenewalDays} gün kaldı`}
+                          </span>
+                          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+                            <div className={cn("h-full", toneClass)} style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {status && (
+                        <Badge variant="outline" className={cn("border", STATUS_BADGE_CLASS[status])}>
+                          {STATUS_LABEL[status]}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Link href={`/firmalar/${c.id}`}>
+                        <ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

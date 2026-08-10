@@ -9,6 +9,7 @@ import type { CurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
 const ACTIVITY_TYPE_SUGGESTIONS = ["Telefon", "Ziyaret", "E-posta", "Toplantı", "Diğer"];
@@ -86,34 +87,45 @@ export function ActivityTimeline({
       {activities.length === 0 ? (
         <p className="text-sm text-muted-foreground">Henüz bir görüşme kaydı bulunmuyor.</p>
       ) : (
-        <div className="flex flex-col gap-2.5">
-          {activities.map((a) => (
-            <div
-              key={a.id}
-              className="group flex items-start justify-between gap-2 rounded-md border-l-2 border-primary bg-muted/40 px-3 py-2"
-            >
-              <div>
-                <p className="text-xs text-muted-foreground">
-                  {a.activityDate} · {a.author} · {a.activityType}
-                </p>
-                <p className="mt-0.5 text-sm">{a.note}</p>
+        <div className="flex flex-col">
+          {activities.map((a, i) => (
+            <div key={a.id} className="group flex gap-3">
+              <div className="flex shrink-0 flex-col items-center">
+                <span className="flex size-6 items-center justify-center rounded-full border border-border bg-muted font-mono text-[10px] font-semibold text-muted-foreground">
+                  {(a.author ?? "?").slice(0, 2).toUpperCase()}
+                </span>
+                {i < activities.length - 1 && <span className="my-1 w-px flex-1 bg-border" />}
               </div>
-              {canDelete(a.author) && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                  disabled={deletingId === a.id}
-                  onClick={() => handleDelete(a.id)}
-                >
-                  {deletingId === a.id ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <Trash2 className="size-3.5 text-destructive" />
-                  )}
-                </Button>
-              )}
+              <div className="flex flex-1 items-start justify-between gap-2 pb-4 min-w-0">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-medium">{a.author}</span>
+                    <span className="font-mono text-[11px] text-muted-foreground">{a.activityDate}</span>
+                    {a.activityType && (
+                      <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+                        {a.activityType}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm leading-relaxed text-foreground/90">{a.note}</p>
+                </div>
+                {canDelete(a.author) && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                    disabled={deletingId === a.id}
+                    onClick={() => handleDelete(a.id)}
+                  >
+                    {deletingId === a.id ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="size-3.5 text-destructive" />
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>

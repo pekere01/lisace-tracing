@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { key: "total", label: "Toplam Firma", icon: Building2, tone: "text-primary" },
-  { key: "sw", label: "SolidWorks Sayısı", icon: Wrench, tone: "text-chart-2" },
-  { key: "cam", label: "SolidCAM Sayısı", icon: Cog, tone: "text-chart-3" },
+  { key: "sw", label: "SolidWorks Sayısı", icon: Wrench, tone: "text-chart-1" },
+  { key: "cam", label: "SolidCAM Sayısı", icon: Cog, tone: "text-chart-2" },
   {
     key: "alerts",
     label: "Yenileme Gerekli",
@@ -35,11 +35,11 @@ export function KpiCards({
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {ITEMS.map((item) => (
-        <Card key={item.key}>
+        <Card key={item.key} className="gap-0 py-4">
           <CardContent className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm text-muted-foreground">{item.label}</p>
-              <p className="mt-1 text-3xl font-semibold tabular-nums">
+              <p className="text-[11.5px] text-muted-foreground">{item.label}</p>
+              <p className="mt-1 font-mono text-3xl font-semibold tabular-nums">
                 {values[item.key]}
               </p>
             </div>

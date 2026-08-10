@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { listUsers, createUser, deleteUser, resetPassword, type AdminUser } from "@/lib/admin";
 import type { CurrentUser } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,7 +111,15 @@ export function UsersTable({ currentUser }: { currentUser: CurrentUser }) {
                   <TableCell className="font-medium">{u.username}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "border font-mono capitalize",
+                        u.role === "admin"
+                          ? "border-primary/35 bg-primary/15 text-primary"
+                          : "border-border bg-muted text-muted-foreground"
+                      )}
+                    >
                       {u.role}
                     </Badge>
                   </TableCell>

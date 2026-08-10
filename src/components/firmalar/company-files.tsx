@@ -58,18 +58,24 @@ export function CompanyFiles({
         <p className="text-sm text-muted-foreground">Post eklenmemiş.</p>
       ) : (
         <div className="flex flex-col gap-2">
-          {files.map((f) => (
-            <a
-              key={f.id}
-              href={f.fileUrl ?? "#"}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 text-sm text-primary hover:underline"
-            >
-              <FileDown className="size-4" />
-              {f.fileName}
-            </a>
-          ))}
+          {files.map((f) => {
+            const ext = (f.fileName?.split(".").pop() ?? "?").slice(0, 4).toUpperCase();
+            return (
+              <a
+                key={f.id}
+                href={f.fileUrl ?? "#"}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 rounded-md border border-border bg-secondary/60 px-2.5 py-2 text-sm hover:border-primary/40"
+              >
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-mono text-[9px] font-semibold text-muted-foreground">
+                  {ext}
+                </span>
+                <span className="min-w-0 flex-1 truncate">{f.fileName}</span>
+                <FileDown className="size-3.5 shrink-0 text-muted-foreground" />
+              </a>
+            );
+          })}
         </div>
       )}
 

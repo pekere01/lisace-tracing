@@ -381,32 +381,41 @@ export function CompanyForm({
         <CardContent className="flex flex-col gap-3">
           {existingFiles.length > 0 && (
             <div className="flex flex-col gap-2">
-              {existingFiles.map((f) => (
-                <div key={f.id} className="flex items-center justify-between gap-2 text-sm">
-                  <a
-                    href={f.fileUrl ?? "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-primary hover:underline"
+              {existingFiles.map((f) => {
+                const ext = (f.fileName?.split(".").pop() ?? "?").slice(0, 4).toUpperCase();
+                return (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-2.5 rounded-md border border-border bg-secondary/60 px-2.5 py-2 text-sm"
                   >
-                    <FileDown className="size-4" />
-                    {f.fileName}
-                  </a>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={deletingFileId === f.id}
-                    onClick={() => handleDeleteExistingFile(f)}
-                  >
-                    {deletingFileId === f.id ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <X className="size-4 text-destructive" />
-                    )}
-                  </Button>
-                </div>
-              ))}
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-mono text-[9px] font-semibold text-muted-foreground">
+                      {ext}
+                    </span>
+                    <a
+                      href={f.fileUrl ?? "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-w-0 flex-1 truncate text-primary hover:underline"
+                    >
+                      {f.fileName}
+                    </a>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0"
+                      disabled={deletingFileId === f.id}
+                      onClick={() => handleDeleteExistingFile(f)}
+                    >
+                      {deletingFileId === f.id ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <X className="size-4 text-destructive" />
+                      )}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           )}
 

@@ -9,10 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LicenseList } from "@/components/firmalar/license-list";
 import { ActivityTimeline } from "@/components/firmalar/activity-timeline";
 import { CompanyFiles } from "@/components/firmalar/company-files";
+import { STATUS_BADGE_CLASS, STATUS_LABEL } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Phone,
@@ -35,6 +38,12 @@ export default async function CompanyDetailPage(
   ]);
   if (!company) notFound();
 
+  const nearestDays = company.licenses
+    .map((l) => l.days)
+    .filter((d): d is number => d !== null)
+    .sort((a, b) => a - b)[0];
+  const nearestStatus = nearestDays !== undefined ? company.licenses.find((l) => l.days === nearestDays)?.status : null;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -44,9 +53,18 @@ export default async function CompanyDetailPage(
           </Link>
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {company.name.toUpperCase()}
-          </h1>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {company.name.toUpperCase()}
+            </h1>
+            {nearestStatus && nearestDays !== undefined && (
+              <Badge variant="outline" className={cn("border font-mono text-[10.5px]", STATUS_BADGE_CLASS[nearestStatus])}>
+                {nearestDays < 0
+                  ? `${Math.abs(nearestDays)} GÜN GEÇTİ`
+                  : `${nearestDays} GÜN İÇİNDE YENİLEME`}
+              </Badge>
+            )}
+          </div>
           {company.lastEditedBy && (
             <p className="text-xs text-muted-foreground">
               Son işlem: {company.lastEditedBy} — {company.lastEditDetails}
