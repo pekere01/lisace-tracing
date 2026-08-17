@@ -55,7 +55,7 @@ export function CompanyFiles({
   return (
     <div className="flex flex-col gap-3">
       {files.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Post eklenmemiş.</p>
+        <p className="text-sm text-muted-foreground">Dosya eklenmemiş.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {files.map((f) => {
@@ -95,7 +95,7 @@ export function CompanyFiles({
         onClick={() => inputRef.current?.click()}
       >
         {uploading ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-        Post Ekle
+        Dosya Ekle
       </Button>
     </div>
   );

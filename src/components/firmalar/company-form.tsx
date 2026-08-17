@@ -300,7 +300,11 @@ export function CompanyForm({
           {licenses.length === 0 && (
             <p className="text-sm text-muted-foreground">Henüz lisans satırı yok.</p>
           )}
-          {licenses.map((l) => (
+          {licenses.map((l) => {
+            const serialLabel = l.family.trim().toLowerCase().startsWith("solidcam")
+              ? "Dongle No"
+              : "Seri No";
+            return (
             <div
               key={l.key}
               className="grid gap-3 rounded-md border border-border/60 p-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto_auto]"
@@ -324,10 +328,11 @@ export function CompanyForm({
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label className="text-xs text-muted-foreground">Seri No</Label>
+                <Label className="text-xs text-muted-foreground">{serialLabel}</Label>
                 <Input
                   value={l.serialNumber}
                   onChange={(e) => updateLicense(l.key, { serialNumber: e.target.value })}
+                  placeholder={serialLabel}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -359,7 +364,8 @@ export function CompanyForm({
                 </Button>
               </div>
             </div>
-          ))}
+            );
+          })}
           <datalist id="family-suggestions">
             <option value="solidworks" />
             <option value="solidcam" />
@@ -376,7 +382,7 @@ export function CompanyForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Post</CardTitle>
+          <CardTitle>Dosyalar</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {existingFiles.length > 0 && (

@@ -149,7 +149,7 @@ export default async function CompanyDetailPage(
 
           <Card>
             <CardHeader>
-              <CardTitle>Post</CardTitle>
+              <CardTitle>Dosyalar</CardTitle>
             </CardHeader>
             <CardContent>
               <CompanyFiles companyId={company.id} files={company.files} />

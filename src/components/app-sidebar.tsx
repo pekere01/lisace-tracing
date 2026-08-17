@@ -119,28 +119,30 @@ export function AppSidebar({
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:hidden">
-          <Avatar className="size-8">
-            <AvatarFallback className="font-mono text-xs">
-              {user.username.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col leading-none min-w-0">
-            <span className="truncate text-sm font-medium">{user.username}</span>
-            <span className="text-xs text-muted-foreground capitalize">
-              {user.role}
-            </span>
+        <div className="flex items-center gap-2 px-2 py-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <Avatar className="size-8 shrink-0">
+              <AvatarFallback className="font-mono text-xs">
+                {user.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-col leading-none">
+              <span className="truncate text-sm font-medium">{user.username}</span>
+              <span className="truncate text-xs text-muted-foreground capitalize">
+                {user.role}
+              </span>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 shrink-0 text-muted-foreground"
+            onClick={handleLogout}
+            title="Çıkış Yap"
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="justify-start gap-2 text-muted-foreground"
-          onClick={handleLogout}
-        >
-          <LogOut className="size-4" />
-          <span className="group-data-[collapsible=icon]:hidden">Çıkış Yap</span>
-        </Button>
       </SidebarFooter>
     </Sidebar>
   );
