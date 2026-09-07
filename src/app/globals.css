@@ -93,7 +93,7 @@
   --primary-foreground: var(--paper);
   --secondary: var(--kraft);
   --secondary-foreground: var(--ink);
-  --muted: var(--paper);
+  --muted: var(--ground);
   --muted-foreground: var(--ink-soft);
   --accent: var(--kraft);
   --accent-foreground: var(--ink);
