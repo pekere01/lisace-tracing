@@ -39,37 +39,33 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-screen bg-background text-foreground lg:grid-cols-[1.05fr_1fr]">
-      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-border bg-gradient-to-br from-accent to-background px-14 py-14 lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-ink px-14 py-14 text-paper lg:flex">
         <div
-          className="pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-0 opacity-50"
           style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px)",
-            backgroundSize: "44px 44px",
+            backgroundImage: "linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px)",
+            backgroundSize: "100% 40px",
           }}
         />
         <div className="relative flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary font-mono text-sm font-bold text-primary-foreground">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-kraft font-mono text-sm font-bold text-ink">
             SÇ
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold">Lisans Paneli</span>
-            <span className="text-xs text-muted-foreground">Sonçağ Mühendislik</span>
+            <span className="text-xs text-[#a9a498]">Sonçağ Mühendislik</span>
           </div>
         </div>
         <div className="relative flex max-w-md flex-col gap-4">
-          <span className="font-mono text-[11px] tracking-[0.16em] text-primary">
-            LİSANS TAKİP SİSTEMİ
-          </span>
-          <h1 className="text-[40px] font-semibold leading-[1.08] tracking-tight text-balance">
-            Tüm firmalar, tek lisans takvimi.
+          <h1 className="text-[40px] font-bold leading-[1.08] tracking-tight text-balance">
+            Her lisans, süresi dolmadan görülür.
           </h1>
-          <p className="text-sm leading-relaxed text-muted-foreground text-balance">
+          <p className="text-sm leading-relaxed text-[#c9c5ba] text-balance">
             SolidWorks ve SolidCAM aboneliklerinin yenileme takvimi, görüşme geçmişi ve
-            firma dosyaları — hepsi aynı panelde.
+            firma dosyaları — hepsi tek etikette.
           </p>
         </div>
-        <span className="relative font-mono text-[11px] text-muted-foreground/60">
+        <span className="relative font-mono text-[11px] text-[#8a8578]">
           Next.js · Supabase
         </span>
       </div>

@@ -1,19 +1,24 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardData } from "@/lib/dashboard";
+import { getCompanyList } from "@/lib/companies";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
-import { LicenseRenewalCard } from "@/components/dashboard/license-renewal";
+import { RenewalShelf } from "@/components/dashboard/renewal-shelf";
 import {
   SolidworksTierChart,
   SolidcamModuleChart,
 } from "@/components/dashboard/charts";
 
 export default async function DashboardPage() {
-  const [user, dashboard] = await Promise.all([getCurrentUser(), getDashboardData()]);
+  const [user, dashboard, companies] = await Promise.all([
+    getCurrentUser(),
+    getDashboardData(),
+    getCompanyList(),
+  ]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-bold tracking-tight">
           Şirket Lisans &amp; Yönetim Paneli
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -30,10 +35,11 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <RenewalShelf companies={companies} />
+
+      <div className="grid gap-4 lg:grid-cols-2">
         <SolidworksTierChart data={dashboard.solidworksTierDist} />
         <SolidcamModuleChart data={dashboard.solidcamModuleDist} />
-        <LicenseRenewalCard alerts={dashboard.renewalAlerts} limit={6} showViewAllLink />
       </div>
     </div>
   );

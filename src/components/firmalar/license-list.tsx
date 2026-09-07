@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import type { CompanyDetail } from "@/lib/companies";
 
 const TONE_BAR_CLASS: Record<string, string> = {
-  expired: "bg-destructive",
-  critical: "bg-destructive",
-  warning: "bg-amber-500",
-  active: "bg-emerald-500",
+  expired: "bg-crit",
+  critical: "bg-crit",
+  warning: "bg-warn",
+  active: "bg-ok",
 };
 
 function StatusBadge({
@@ -42,7 +42,7 @@ export function LicenseList({ licenses }: { licenses: CompanyDetail["licenses"] 
         return (
           <div
             key={l.id}
-            className="flex flex-col gap-2 rounded-md border border-border/60 px-3 py-2.5"
+            className="flex flex-col gap-2 rounded-md border border-border bg-card px-3 py-2.5"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-medium">

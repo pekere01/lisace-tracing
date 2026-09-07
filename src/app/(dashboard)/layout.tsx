@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getRenewalAlertsCount } from "@/lib/dashboard";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { TopNav } from "@/components/top-nav";
 
 export default async function DashboardLayout({
   children,
@@ -17,15 +15,11 @@ export default async function DashboardLayout({
   if (!user) redirect("/login");
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} renewalAlertsCount={renewalAlertsCount} />
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/85 px-4 backdrop-blur-sm">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex min-h-screen flex-col">
+      <TopNav user={user} renewalAlertsCount={renewalAlertsCount} />
+      <main className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-4 p-4 md:p-7">
+        {children}
+      </main>
+    </div>
   );
 }

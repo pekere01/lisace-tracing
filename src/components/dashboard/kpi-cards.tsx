@@ -1,17 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Building2, RefreshCcw, Wrench, Cog } from "lucide-react";
-import { cn } from "@/lib/utils";
-
 const ITEMS = [
-  { key: "total", label: "Toplam Firma", icon: Building2, tone: "text-primary" },
-  { key: "sw", label: "SolidWorks Sayısı", icon: Wrench, tone: "text-chart-1" },
-  { key: "cam", label: "SolidCAM Sayısı", icon: Cog, tone: "text-chart-2" },
-  {
-    key: "alerts",
-    label: "Yenileme Gerekli",
-    icon: RefreshCcw,
-    tone: "text-destructive",
-  },
+  { key: "total", label: "Toplam Firma" },
+  { key: "sw", label: "SolidWorks Sayısı" },
+  { key: "cam", label: "SolidCAM Sayısı" },
+  { key: "alerts", label: "Yenileme Gerekli", crit: true },
 ] as const;
 
 export function KpiCards({
@@ -33,26 +24,21 @@ export function KpiCards({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      {ITEMS.map((item) => (
-        <Card key={item.key} className="gap-0 py-4">
-          <CardContent className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11.5px] text-muted-foreground">{item.label}</p>
-              <p className="mt-1 font-mono text-3xl font-semibold tabular-nums">
-                {values[item.key]}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-full bg-muted",
-                item.tone
-              )}
-            >
-              <item.icon className="size-5" />
-            </div>
-          </CardContent>
-        </Card>
+    <div className="flex overflow-hidden rounded-lg border border-border bg-card">
+      {ITEMS.map((item, i) => (
+        <div
+          key={item.key}
+          className={`flex-1 px-5 py-4 ${i > 0 ? "border-l border-dashed border-kraft-shadow/60" : ""}`}
+        >
+          <div
+            className={`font-mono text-[28px] leading-none font-bold tabular-nums ${"crit" in item && values[item.key] > 0 ? "text-crit" : "text-ink"}`}
+          >
+            {values[item.key]}
+          </div>
+          <div className="mt-1.5 text-[11px] tracking-wide text-ink-soft uppercase">
+            {item.label}
+          </div>
+        </div>
       ))}
     </div>
   );

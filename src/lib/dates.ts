@@ -27,10 +27,10 @@ export const STATUS_LABEL: Record<LicenseStatus, string> = {
 };
 
 export const STATUS_BADGE_CLASS: Record<LicenseStatus, string> = {
-  expired: "bg-destructive/15 text-destructive border-destructive/30",
-  critical: "bg-destructive/15 text-destructive border-destructive/30",
-  warning: "bg-amber-500/15 text-amber-500 border-amber-500/30",
-  active: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30",
+  expired: "bg-crit-bg text-crit border-crit/25",
+  critical: "bg-crit-bg text-crit border-crit/25",
+  warning: "bg-warn-bg text-warn border-warn/25",
+  active: "bg-ok-bg text-ok border-ok/25",
 };
 
 export type RenewalStage = "renewable" | "recapture" | "sunset";
@@ -58,7 +58,7 @@ export const RENEWAL_STAGE_LABEL: Record<RenewalStage, string> = {
 };
 
 export const RENEWAL_STAGE_BADGE_CLASS: Record<RenewalStage, string> = {
-  renewable: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30",
-  recapture: "bg-amber-500/15 text-amber-500 border-amber-500/30",
-  sunset: "bg-muted text-muted-foreground border-border",
+  renewable: "bg-warn-bg text-warn border-warn/25",
+  recapture: "bg-crit-bg text-crit border-crit/25",
+  sunset: "bg-kraft text-ink-soft border-kraft-shadow/40",
 };

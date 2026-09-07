@@ -18,8 +18,8 @@ import { licenseStatus, STATUS_LABEL, STATUS_BADGE_CLASS } from "@/lib/dates";
 import type { CompanyListItem } from "@/lib/companies";
 
 const FAMILY_CHIP_CLASS: Record<string, string> = {
-  solidworks: "bg-sky-500/15 text-sky-400 border-sky-500/30",
-  solidcam: "bg-violet-500/15 text-violet-400 border-violet-500/30",
+  solidworks: "bg-kraft text-kraft-ink border-kraft-shadow/50",
+  solidcam: "bg-kraft text-kraft-ink border-kraft-shadow/50",
 };
 
 const FAMILY_ABBR: Record<string, string> = {
@@ -30,10 +30,10 @@ const FAMILY_ABBR: Record<string, string> = {
 };
 
 const TONE_BAR_CLASS: Record<string, string> = {
-  expired: "bg-destructive",
-  critical: "bg-destructive",
-  warning: "bg-amber-500",
-  active: "bg-emerald-500",
+  expired: "bg-crit",
+  critical: "bg-crit",
+  warning: "bg-warn",
+  active: "bg-ok",
 };
 
 const FILTERS = ["Tümü", "SolidWorks", "SolidCAM", "30 gün içinde", "Süresi geçmiş"] as const;
@@ -79,10 +79,10 @@ export function CompanyTable({ companies }: { companies: CompanyListItem[] }) {
               type="button"
               onClick={() => setFilter(f)}
               className={cn(
-                "h-[30px] rounded-md border px-3 text-xs font-medium transition-colors",
+                "h-[30px] rounded-md border border-transparent px-3 text-xs font-semibold transition-transform hover:-translate-y-px",
                 filter === f
-                  ? "border-primary/45 bg-primary/15 text-primary"
-                  : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+                  ? "bg-ink text-paper"
+                  : "bg-kraft text-ink-soft"
               )}
             >
               {f}
@@ -91,7 +91,7 @@ export function CompanyTable({ companies }: { companies: CompanyListItem[] }) {
         </div>
       </div>
 
-      <div className="rounded-lg border">
+      <div className="rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

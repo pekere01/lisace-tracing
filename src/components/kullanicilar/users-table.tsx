@@ -80,7 +80,7 @@ export function UsersTable({ currentUser }: { currentUser: CurrentUser }) {
         <CreateUserDialog onCreated={refresh} />
       </div>
 
-      <div className="rounded-lg border">
+      <div className="rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
