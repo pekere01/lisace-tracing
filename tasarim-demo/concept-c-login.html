@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giriş — Enstrüman Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  body{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:1fr;min-height:100vh}
+  @media (max-width:860px){ body{grid-template-columns:1fr} .side{display:none} }
+  .side{
+    position:relative;overflow:hidden;background:var(--panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;justify-content:space-between;padding:56px;
+  }
+  .side::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:44px 44px;
+  }
+  .side-brand{position:relative;display:flex;align-items:center;gap:10px}
+  .side h1{position:relative;font-size:32px;line-height:1.2;font-weight:700;margin:0;max-width:420px;letter-spacing:0}
+  .side p{position:relative;color:var(--text-dim);font-size:13px;max-width:420px;line-height:1.6}
+  .form-side{display:flex;align-items:center;justify-content:center;padding:40px}
+  .form-wrap{width:100%;max-width:360px}
+  .form-wrap h2{margin:0 0 6px;font-size:18px;font-weight:700;letter-spacing:0}
+  .form-wrap>p{margin:0 0 22px;font-size:12.5px;color:var(--text-dim)}
+</style>
+</head>
+<body>
+  <div class="side">
+    <div class="side-brand"><span class="led"></span><div><div style="font-weight:700;font-size:13px">Lisans Paneli</div><div style="font-size:12px;color:var(--text-dim)">Sonçağ Mühendislik</div></div></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h1>Her kanal izlenir.<br>Alarm kaçmaz.</h1>
+      <p>SolidWorks ve SolidCAM aboneliklerinin yenileme takvimi, görüşme geçmişi ve firma dosyaları — tek kontrol panelinde.</p>
+    </div>
+    <span style="position:relative;font:600 11px 'JetBrains Mono',monospace;color:var(--text-dim)">NEXT.JS · SUPABASE</span>
+  </div>
+  <div class="form-side">
+    <div class="form-wrap">
+      <h2>Panele Giriş</h2>
+      <p>Hesabınız yoksa yöneticinizden talep edin.</p>
+      <form onsubmit="return false" style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label>E-POSTA</label><input type="email" required></div>
+        <div class="field"><label>ŞİFRE</label><input type="password" required></div>
+        <button type="submit" class="btn btn-primary" style="justify-content:center;margin-top:4px">Giriş Yap</button>
+      </form>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:18px;line-height:1.6">Oturumlar Supabase Auth ile yönetilir. Şifre sıfırlama talebi için panel yöneticisine yazın.</p>
+    </div>
+  </div>
+</body>
+</html>

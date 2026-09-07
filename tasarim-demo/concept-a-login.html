@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giriş — Kalibrasyon Etiketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-a-shared.css">
+<style>
+  body{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:1fr;min-height:100vh}
+  @media (max-width:860px){ body{grid-template-columns:1fr} .side{display:none} }
+  .side{
+    position:relative;overflow:hidden;background:var(--ink);color:var(--paper);
+    display:flex;flex-direction:column;justify-content:space-between;padding:56px;
+  }
+  .side::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:100% 40px;
+  }
+  .side-brand{position:relative;display:flex;align-items:center;gap:12px}
+  .side-brand .mark{width:38px;height:38px;border-radius:8px;background:var(--kraft);color:var(--ink);display:flex;align-items:center;justify-content:center;font:700 14px "IBM Plex Mono",monospace}
+  .side h1{position:relative;font-size:38px;line-height:1.1;font-weight:700;margin:0;max-width:420px}
+  .side p{position:relative;color:#c9c5ba;font-size:14px;max-width:420px;line-height:1.6}
+  .form-side{display:flex;align-items:center;justify-content:center;padding:40px}
+  .form-wrap{width:100%;max-width:360px}
+  .form-wrap h2{margin:0 0 6px;font-size:21px;font-weight:700}
+  .form-wrap>p{margin:0 0 22px;font-size:13px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+  <div class="side">
+    <div class="side-brand"><div class="mark">SÇ</div><div><div style="font-weight:700;font-size:14px">Lisans Paneli</div><div style="font-size:12px;color:#a9a498">Sonçağ Mühendislik</div></div></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h1>Her lisans, süresi dolmadan görülür.</h1>
+      <p>SolidWorks ve SolidCAM aboneliklerinin yenileme takvimi, görüşme geçmişi ve firma dosyaları — hepsi tek etikette.</p>
+    </div>
+    <span style="position:relative;font:600 11px 'IBM Plex Mono',monospace;color:#8a8578">Next.js · Supabase</span>
+  </div>
+  <div class="form-side">
+    <div class="form-wrap">
+      <h2>Panele giriş</h2>
+      <p>Hesabınız yoksa yöneticinizden talep edin.</p>
+      <form onsubmit="return false" style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label>E-posta</label><input type="email" required></div>
+        <div class="field"><label>Şifre</label><input type="password" required></div>
+        <button type="submit" class="btn btn-primary" style="justify-content:center;margin-top:4px">Giriş Yap</button>
+      </form>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:18px;line-height:1.6">Oturumlar Supabase Auth ile yönetilir. Şifre sıfırlama talebi için panel yöneticisine yazın.</p>
+    </div>
+  </div>
+</body>
+</html>

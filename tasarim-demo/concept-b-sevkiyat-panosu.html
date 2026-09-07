@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sevkiyat Panosu — Lisans Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel:#1c1f22;
+    --steel-2:#25292d;
+    --panel:#0e0f11;
+    --flap:#141618;
+    --flap-edge:#050506;
+    --white:#f2f3f0;
+    --dim:#8b9096;
+    --amber:#e8a53d;
+    --red:#d94a3d;
+    --green:#4caf78;
+    --ease-out: cubic-bezier(0.23,1,0.32,1);
+    --ease-in-out: cubic-bezier(0.77,0,0.175,1);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background: radial-gradient(120% 100% at 50% -10%, #26292c 0%, var(--panel) 60%);
+    color:var(--white);
+    font: 500 14px/1.4 "IBM Plex Mono", ui-monospace, monospace;
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;border-bottom:1px solid #2c3034;
+  }
+  .wordmark{font-family:"Oswald",sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--white)}
+  .wordmark span{color:var(--amber)}
+  nav{display:flex;gap:26px}
+  nav a{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding-bottom:4px;border-bottom:2px solid transparent;transition:color 160ms var(--ease-out), border-color 160ms var(--ease-out)}
+  nav a:hover{color:var(--white)}
+  nav a.active{color:var(--white);border-color:var(--amber)}
+  .clock{font-size:12px;color:var(--dim);letter-spacing:.05em}
+
+  main{max-width:1180px;margin:0 auto;padding:36px 32px 60px}
+
+  .board-frame{
+    background: linear-gradient(180deg,var(--steel-2),var(--steel));
+    border-radius:10px;
+    padding:22px;
+    box-shadow: 0 30px 60px -25px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .board-head{
+    display:grid;
+    grid-template-columns: 2.6fr 2.2fr 1.1fr 1.1fr;
+    padding:0 14px 12px;
+    font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    border-bottom:1px solid #33383d;
+    margin-bottom:14px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns: 2.6fr 2.2fr 1.1fr 1.1fr;
+    gap:0;
+    align-items:stretch;
+    padding:6px 14px;
+    border-radius:4px;
+  }
+  .row[data-status="crit"]{ background: linear-gradient(90deg, rgba(217,74,61,.10), transparent 55%); }
+  .row[data-status="warn"]{ background: linear-gradient(90deg, rgba(232,165,61,.08), transparent 55%); }
+  .row[data-status="ok"]{ background: linear-gradient(90deg, rgba(76,175,120,.06), transparent 55%); }
+
+  .cellgroup{display:flex;gap:3px;padding:5px 6px 5px 0}
+  .cellgroup.status{justify-content:flex-end}
+
+  .flap{
+    position:relative;
+    width:15px;height:22px;
+    background:var(--flap);
+    border-radius:2px;
+    overflow:hidden;
+    box-shadow: 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.6);
+    flex:0 0 auto;
+  }
+  .flap::after{ /* center hinge line */
+    content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--flap-edge);transform:translateY(-.5px);z-index:2;
+  }
+  .flap .glyph{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:"Oswald",sans-serif;font-weight:600;font-size:14px;color:var(--white);
+    transform: rotateX(0deg);
+    transform-origin:center;
+    transition: transform 160ms var(--ease-in-out), opacity 160ms linear;
+    backface-visibility:hidden;
+  }
+  .flap.spin .glyph{ transform: rotateX(90deg); opacity:0 }
+  .flap.wide{width:11px}
+  .flap-space{width:8px;flex:0 0 auto}
+
+  .row .num{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--dim);align-self:center;padding:0 6px;
+  }
+  .row[data-status="crit"] .num.days{color:var(--red);font-weight:600}
+  .row[data-status="warn"] .num.days{color:var(--amber);font-weight:600}
+  .row[data-status="ok"] .num.days{color:var(--green);font-weight:600}
+
+  .status-pill{
+    align-self:center;
+    font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+    padding:4px 10px;border-radius:3px;
+  }
+  .row[data-status="crit"] .status-pill{background:rgba(217,74,61,.16);color:#ff8f81}
+  .row[data-status="warn"] .status-pill{background:rgba(232,165,61,.16);color:#ffc978}
+  .row[data-status="ok"] .status-pill{background:rgba(76,175,120,.16);color:#7fe0ab}
+
+  .row-sep{height:1px;background:#2a2e32;margin:2px 14px}
+
+  .legend{display:flex;gap:22px;margin-top:22px;padding:0 6px;font-size:11px;color:var(--dim);font-family:"Oswald",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+  @media (prefers-reduced-motion: reduce){
+    .flap .glyph{transition:opacity 200ms linear !important; transform:none !important}
+    .flap.spin .glyph{transform:none !important}
+  }
+  footer{text-align:center;color:var(--dim);font-size:11px;padding:10px 0 40px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark">LİSANS<span>·</span>PANEL</div>
+  <nav>
+    <a class="active">PANO</a>
+    <a>FİRMALAR</a>
+    <a>UYARILAR</a>
+    <a>KULLANICILAR</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <div class="board-frame">
+    <div class="board-head">
+      <div>FİRMA</div><div>LİSANS</div><div>KALAN</div><div style="text-align:right">DURUM</div>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--red)"></i> Kritik — 30 gün veya geçmiş</span>
+    <span><i style="background:var(--amber)"></i> Yakında — 31–60 gün</span>
+    <span><i style="background:var(--green)"></i> Sağlıklı — 60+ gün</span>
+  </div>
+</main>
+<footer>Kavram B · Sevkiyat Panosu — demo verisi kurgusaldır</footer>
+
+<script>
+const TODAY = new Date('2026-09-06');
+const companies = [
+  { firma:"AYDIN KALIP SAN.", lisans:"SW STANDARD", bitis:"2026-09-10" },
+  { firma:"VEGA MAKINE LTD.", lisans:"SC 2.5D FREZE", bitis:"2026-08-30" },
+  { firma:"TRIO MAKINA SAN.", lisans:"SW PROFESSIONAL", bitis:"2026-09-08" },
+  { firma:"DEMIRTAS PRECISION", lisans:"SW STD + SC 2.5D", bitis:"2026-09-30" },
+  { firma:"CELIK FORM END.", lisans:"CT ELEKTROT MOD.", bitis:"2026-10-01" },
+  { firma:"NOVA OTOMASYON A.S.", lisans:"SW STANDARD", bitis:"2026-10-15" },
+  { firma:"BORU HATTI MUH.", lisans:"SW PREMIUM + SC TORNA", bitis:"2026-12-20" },
+  { firma:"KALENDER METAL", lisans:"CT KALIP MODULU", bitis:"2027-01-15" },
+  { firma:"YILDIZ KAYNAK SIS.", lisans:"SC 3+2 FREZE", bitis:"2026-11-20" },
+  { firma:"ORION KALIP VE MODEL", lisans:"SW PREMIUM", bitis:"2027-02-10" },
+];
+
+function daysLeft(dateStr){ return Math.round((new Date(dateStr) - TODAY) / 86400000); }
+function statusOf(d){ return d<=30 ? "crit" : d<=60 ? "warn" : "ok"; }
+function statusLabel(s){ return s==="crit" ? "KRİTİK" : s==="warn" ? "YAKINDA" : "SAĞLIKLI"; }
+
+const rowsEl = document.getElementById('rows');
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.+ ";
+
+function makeFlapString(text, len){
+  text = text.toUpperCase().padEnd(len,' ').slice(0,len);
+  const wrap = document.createElement('div');
+  wrap.className = 'cellgroup';
+  [...text].forEach((ch) => {
+    if(ch === ' '){
+      const sp = document.createElement('div'); sp.className='flap-space'; wrap.appendChild(sp); return;
+    }
+    const flap = document.createElement('div'); flap.className='flap';
+    const g = document.createElement('div'); g.className='glyph'; g.textContent = ch;
+    flap.appendChild(g); wrap.appendChild(flap);
+  });
+  return wrap;
+}
+
+let data = companies.map(c => {
+  const days = daysLeft(c.bitis);
+  return { ...c, days, status: statusOf(days) };
+}).sort((a,b) => a.days - b.days);
+
+data.forEach((c, i) => {
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.dataset.status = c.status;
+  row.style.opacity = '0';
+
+  row.appendChild(makeFlapString(c.firma, 20));
+  row.appendChild(makeFlapString(c.lisans, 18));
+
+  const num = document.createElement('div');
+  num.className = 'num days';
+  const dayText = c.days < 0 ? `+${Math.abs(c.days)}` : `${c.days}`;
+  num.textContent = dayText;
+  row.appendChild(num);
+
+  const pillWrap = document.createElement('div');
+  pillWrap.style.textAlign = 'right';
+  const pill = document.createElement('span');
+  pill.className = 'status-pill';
+  pill.textContent = statusLabel(c.status);
+  pillWrap.appendChild(pill);
+  row.appendChild(pillWrap);
+
+  rowsEl.appendChild(row);
+  if(i < data.length - 1){
+    const sep = document.createElement('div'); sep.className='row-sep';
+    rowsEl.appendChild(sep);
+  }
+});
+
+// cascade reveal: rows fade in top-to-bottom, then each flap does a quick spin-settle
+const rows = [...rowsEl.querySelectorAll('.row')];
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+rows.forEach((row, ri) => {
+  setTimeout(() => {
+    row.style.transition = `opacity 200ms linear`;
+    row.style.opacity = '1';
+    const flaps = row.querySelectorAll('.flap');
+    if(reduced) return;
+    flaps.forEach((flap, fi) => {
+      setTimeout(() => {
+        flap.classList.add('spin');
+        setTimeout(() => flap.classList.remove('spin'), 90);
+      }, fi * 14);
+    });
+  }, ri * 90);
+});
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+tickClock(); setInterval(tickClock, 1000);
+</script>
+</body>
+</html>

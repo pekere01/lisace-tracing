@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalibrasyon Etiketi — Lisans Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-a-shared.css">
+<style>
+  main{padding-top:8px}
+  /* ---- tally row ---- */
+  .tally-row{
+    display:flex;border:1px solid var(--ground-line);border-radius:10px;background:var(--paper);
+    margin-bottom:8px;overflow:hidden;
+  }
+  .tally{flex:1;padding:16px 20px;border-right:1px dashed var(--kraft-shadow)}
+  .tally:last-child{border-right:none}
+  .tally .n{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:28px;line-height:1}
+  .tally .l{font-size:11px;color:var(--ink-soft);margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+  .tally.crit .n{color:var(--crit)}
+  /* ---- shelf ---- */
+  .shelf{margin-top:36px}
+  .shelf-head{
+    display:flex;align-items:baseline;gap:10px;
+    padding-bottom:10px;margin-bottom:22px;
+    border-bottom:2px solid var(--ink);
+  }
+  .shelf-head h2{margin:0;font-size:14px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+  .shelf-head .count{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:var(--ink-soft)}
+  .shelf-head .rule{flex:1;height:1px}
+  .shelf[data-level="crit"] .shelf-head{border-color:var(--crit)}
+  .shelf[data-level="warn"] .shelf-head{border-color:var(--warn)}
+  .shelf[data-level="ok"] .shelf-head{border-color:var(--ok)}
+  .rail{
+    display:flex;gap:26px;overflow-x:auto;padding:26px 6px 34px;
+    scrollbar-width:thin;
+  }
+
+  /* ---- tag ---- */
+  .tag{
+    --rot: 0deg;
+    flex: 0 0 210px;
+    position:relative;
+    perspective: 900px;
+    opacity:0;
+    transform: translateY(10px) scale(.95);
+    animation: rise 480ms var(--ease-out) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+  @keyframes rise{ to{ opacity:1; transform: translateY(0) scale(1); } }
+
+  .string{
+    width:1px;height:26px;background:var(--ink-soft);margin:0 auto;
+    transform-origin: top center;
+    transition: height 220ms var(--ease-out);
+  }
+  .card{
+    position:relative;
+    transform-style:preserve-3d;
+    transform: rotate(var(--rot));
+    transition: transform 380ms var(--ease-in-out);
+    cursor:pointer;
+  }
+  .tag:hover .card{ --rot: 0deg; transform: rotate(0deg) translateY(-6px) scale(1.03); }
+  .card:active{ transform: rotate(var(--rot)) scale(.97); transition-duration:120ms; }
+  .tag .card.flipped{ transform: rotate(0deg) rotateY(180deg); }
+
+  .face{
+    position:relative;
+    background:var(--kraft);
+    border-radius:6px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 10px 18px -10px rgba(43,41,38,.35);
+    padding:16px 14px 14px;
+    backface-visibility:hidden;
+    min-height:172px;
+    overflow:hidden;
+  }
+  .face::before{
+    content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:12px;height:12px;border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--ground) 0 3px, var(--kraft-shadow) 4px 5px, var(--ground) 6px 100%);
+  }
+  .back{ position:absolute; inset:0; transform: rotateY(180deg); background:var(--ink); }
+
+  .band{
+    height:8px;border-radius:3px;margin:14px 0 12px;
+  }
+  .tag[data-status="crit"] .band{background:var(--crit)}
+  .tag[data-status="warn"] .band{background:var(--warn)}
+  .tag[data-status="ok"] .band{background:var(--ok)}
+
+  .firma{font-weight:700;font-size:14.5px;letter-spacing:-.005em;line-height:1.25;margin-bottom:6px;min-height:36px}
+  .lisans{font-size:12px;color:var(--kraft-ink);margin-bottom:12px}
+  .lisans b{color:var(--ink);font-weight:600}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--kraft-ink);border-top:1px dashed var(--kraft-shadow);padding-top:9px}
+  .meta .days{font-weight:600}
+  .tag[data-status="crit"] .meta .days{color:var(--crit)}
+  .tag[data-status="warn"] .meta .days{color:var(--warn)}
+  .tag[data-status="ok"] .meta .days{color:var(--ok)}
+
+  .back-content{padding:16px 14px;color:#f2ead9;font-size:12px}
+  .back-content .lbl{color:#c9bfae;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-top:10px}
+  .back-content .val{color:#f2ead9;font-weight:600;margin-top:2px}
+  .back-content .lbl:first-child{margin-top:0}
+
+  @media (hover:hover) and (pointer:fine){
+    .tag:hover .string{height:34px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tag{animation: none; opacity:1; transform:none}
+    .card, .card:hover, .string{transition:none}
+    .tag:hover .card{transform:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark"><span class="hole"></span> LİSANS PANELİ</div>
+  <nav>
+    <a class="tab active" href="concept-a-kalibrasyon.html">Panel</a>
+    <a class="tab" href="concept-a-firmalar.html">Firmalar</a>
+    <a class="tab" href="concept-a-yeni-firma.html">Yeni Firma</a>
+    <a class="tab" href="concept-a-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a class="tab" href="concept-a-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="user">EA</div>
+</header>
+
+<main>
+  <div class="tally-row">
+    <div class="tally"><div class="n">10</div><div class="l">Toplam Firma</div></div>
+    <div class="tally"><div class="n">7</div><div class="l">SolidWorks Sayısı</div></div>
+    <div class="tally"><div class="n">4</div><div class="l">SolidCAM Sayısı</div></div>
+    <div class="tally crit"><div class="n">5</div><div class="l">Yenileme Gerekli</div></div>
+  </div>
+  <div class="shelf" data-level="crit">
+    <div class="shelf-head"><h2>Kritik — 30 gün içinde / geçmiş</h2><span class="count" id="count-crit"></span></div>
+    <div class="rail" id="rail-crit"></div>
+  </div>
+  <div class="shelf" data-level="warn">
+    <div class="shelf-head"><h2>Yakında — 31–60 gün</h2><span class="count" id="count-warn"></span></div>
+    <div class="rail" id="rail-warn"></div>
+  </div>
+  <div class="shelf" data-level="ok">
+    <div class="shelf-head"><h2>Sağlıklı — 60+ gün</h2><span class="count" id="count-ok"></span></div>
+    <div class="rail" id="rail-ok"></div>
+  </div>
+</main>
+<footer>Kavram A · Kalibrasyon Etiketi — demo verisi kurgusaldır</footer>
+
+<script>
+const TODAY = new Date('2026-09-06');
+const companies = [
+  { firma:"Aydın Kalıp San. Tic. A.Ş.", lisans:"solidworks: Standard", bitis:"2026-09-10", kisi:"Serkan Aydın", telefon:"0532 xxx xx xx" },
+  { firma:"Vega Makine Ltd. Şti.", lisans:"solidcam: 2.5D Frezeleme", bitis:"2026-08-30", kisi:"Melis Vega", telefon:"0533 xxx xx xx" },
+  { firma:"Trio Makina San.", lisans:"solidworks: Professional", bitis:"2026-09-08", kisi:"Onur Tarhan", telefon:"0535 xxx xx xx" },
+  { firma:"Demirtaş Precision", lisans:"solidworks: Standard, solidcam: 2.5D", bitis:"2026-09-30", kisi:"Ayça Demirtaş", telefon:"0536 xxx xx xx" },
+  { firma:"Çelik Form Endüstri", lisans:"cimatron: Elektrot Modülü", bitis:"2026-10-01", kisi:"Barış Çelik", telefon:"0538 xxx xx xx" },
+  { firma:"Nova Otomasyon A.Ş.", lisans:"solidworks: Standard", bitis:"2026-10-15", kisi:"Ece Nova", telefon:"0542 xxx xx xx" },
+  { firma:"Boru Hattı Mühendislik", lisans:"solidworks: Premium, solidcam: Tornalama", bitis:"2026-12-20", kisi:"Kaan Boru", telefon:"0544 xxx xx xx" },
+  { firma:"Kalender Metal", lisans:"cimatron: Kalıp Modülü", bitis:"2027-01-15", kisi:"Derya Kalender", telefon:"0545 xxx xx xx" },
+  { firma:"Yıldız Kaynak Sistemleri", lisans:"solidcam: 3+2 Frezeleme", bitis:"2026-11-20", kisi:"Tolga Yıldız", telefon:"0546 xxx xx xx" },
+  { firma:"Orion Kalıp ve Model", lisans:"solidworks: Premium", bitis:"2027-02-10", kisi:"Sena Orion", telefon:"0549 xxx xx xx" },
+];
+
+function daysLeft(dateStr){
+  const d = new Date(dateStr);
+  return Math.round((d - TODAY) / 86400000);
+}
+function statusOf(days){
+  if(days <= 30) return "crit";
+  if(days <= 60) return "warn";
+  return "ok";
+}
+const rots = [-3,2,-1.5,3,-2.5,1,2.5,-1,1.5,-2];
+
+const rails = { crit: document.getElementById('rail-crit'), warn: document.getElementById('rail-warn'), ok: document.getElementById('rail-ok') };
+const buckets = { crit:[], warn:[], ok:[] };
+
+companies.forEach((c,i) => {
+  const days = daysLeft(c.bitis);
+  const status = statusOf(days);
+  buckets[status].push(c);
+});
+
+let globalDelay = 0;
+Object.keys(buckets).forEach(status => {
+  buckets[status].forEach((c,i) => {
+    const days = daysLeft(c.bitis);
+    const dayLabel = days < 0 ? `${Math.abs(days)} gün geçti` : `${days} gün kaldı`;
+    const el = document.createElement('div');
+    el.className = 'tag';
+    el.dataset.status = status;
+    el.style.setProperty('--rot', rots[(i + globalDelay) % rots.length] + 'deg');
+    el.style.setProperty('--d', (i * 60) + 'ms');
+    el.innerHTML = `
+      <div class="string"></div>
+      <div class="card">
+        <div class="face front">
+          <div class="firma">${c.firma}</div>
+          <div class="lisans"><b>Lisans:</b> ${c.lisans}</div>
+          <div class="band"></div>
+          <div class="meta"><span>${c.bitis}</span><span class="days">${dayLabel}</span></div>
+        </div>
+        <div class="face back">
+          <div class="back-content">
+            <div class="lbl">İlgili kişi</div><div class="val">${c.kisi}</div>
+            <div class="lbl">Telefon</div><div class="val">${c.telefon}</div>
+            <div class="lbl">Bitiş tarihi</div><div class="val">${c.bitis}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    el.querySelector('.card').addEventListener('click', function(){
+      this.classList.toggle('flipped');
+    });
+    rails[status].appendChild(el);
+    globalDelay++;
+  });
+});
+
+document.getElementById('count-crit').textContent = buckets.crit.length + ' firma';
+document.getElementById('count-warn').textContent = buckets.warn.length + ' firma';
+document.getElementById('count-ok').textContent = buckets.ok.length + ' firma';
+</script>
+</body>
+</html>

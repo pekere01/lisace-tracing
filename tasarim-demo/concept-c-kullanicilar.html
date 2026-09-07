@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kullanıcılar — Enstrüman Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  .icon-btn{width:32px;height:32px;border-radius:10px;background:transparent;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 140ms var(--ease-out), border-color 140ms var(--ease-out)}
+  .icon-btn:hover{border-color:var(--line-bright)}
+  .icon-btn:active{transform:scale(.92)}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5 20 3"/><path d="M17 6l3 3"/><path d="M14 9l2 2"/></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+</svg>
+<header>
+  <div class="wordmark"><span class="led"></span>LİSANS · KONTROL PANELİ</div>
+  <nav>
+    <a href="concept-c-enstruman-paneli.html">Panel</a>
+    <a href="concept-c-firmalar.html">Firmalar</a>
+    <a href="concept-c-yeni-firma.html">Yeni Firma</a>
+    <a href="concept-c-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a class="active" href="concept-c-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div><h1>Kullanıcılar</h1><p>Kontrol paneli erişim hesapları</p></div>
+    <button class="btn btn-primary" onclick="openDialog('create')">+ Yeni Kullanıcı</button>
+  </div>
+
+  <div class="card-block" style="padding:0;overflow:hidden">
+    <table class="ledger">
+      <thead><tr><th>KULLANICI ADI</th><th>E-POSTA</th><th>ROL</th><th style="width:90px"></th></tr></thead>
+      <tbody>
+        <tr><td class="firma-cell mono">emre.a</td><td style="color:var(--text-dim)">emre@soncag.com</td><td><span class="chip chip-ok">ADMIN</span></td>
+          <td style="text-align:right"><button class="icon-btn" onclick="openDialog('reset')" title="Şifre Sıfırla"><svg class="icon"><use href="#i-key"/></svg></button></td></tr>
+        <tr><td class="firma-cell mono">basak.k</td><td style="color:var(--text-dim)">basak@soncag.com</td><td><span class="chip chip-neutral">PERSONEL</span></td>
+          <td style="text-align:right"><button class="icon-btn" onclick="openDialog('reset')" title="Şifre Sıfırla"><svg class="icon"><use href="#i-key"/></svg></button> <button class="icon-btn" title="Sil"><svg class="icon"><use href="#i-trash"/></svg></button></td></tr>
+        <tr><td class="firma-cell mono">onur.t</td><td style="color:var(--text-dim)">onur@soncag.com</td><td><span class="chip chip-neutral">PERSONEL</span></td>
+          <td style="text-align:right"><button class="icon-btn" onclick="openDialog('reset')" title="Şifre Sıfırla"><svg class="icon"><use href="#i-key"/></svg></button> <button class="icon-btn" title="Sil"><svg class="icon"><use href="#i-trash"/></svg></button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<footer>Kavram C · Atölye Enstrüman Paneli — Kullanıcılar — demo verisi kurgusaldır</footer>
+
+<div class="scrim" id="scrim">
+  <div class="dialog" id="dialog-create" style="display:none">
+    <h2>Yeni Kullanıcı</h2>
+    <p class="sub">Panel için bir hesap oluştur.</p>
+    <div class="field" style="margin-bottom:12px"><label>KULLANICI ADI</label><input placeholder="ör. basak.k"></div>
+    <div class="field" style="margin-bottom:12px"><label>E-POSTA</label><input type="email" placeholder="basak@soncag.com"></div>
+    <div class="field" style="margin-bottom:12px"><label>ŞİFRE</label><input type="password"></div>
+    <div class="field"><label>ROL</label><select><option>personel</option><option>admin</option></select></div>
+    <div class="dialog-actions"><button class="btn btn-outline" onclick="closeDialog()">Vazgeç</button><button class="btn btn-primary" onclick="closeDialog()">Oluştur</button></div>
+  </div>
+  <div class="dialog" id="dialog-reset" style="display:none">
+    <h2>Şifre Sıfırla</h2>
+    <p class="sub">Kullanıcı için yeni şifre belirle.</p>
+    <div class="field"><label>YENİ ŞİFRE</label><input type="password"></div>
+    <div class="dialog-actions"><button class="btn btn-outline" onclick="closeDialog()">Vazgeç</button><button class="btn btn-primary" onclick="closeDialog()">Kaydet</button></div>
+  </div>
+</div>
+
+<script>
+function openDialog(which){
+  document.getElementById('dialog-create').style.display = which==='create' ? 'block' : 'none';
+  document.getElementById('dialog-reset').style.display = which==='reset' ? 'block' : 'none';
+  document.getElementById('scrim').classList.add('open');
+}
+function closeDialog(){ document.getElementById('scrim').classList.remove('open'); }
+document.getElementById('scrim').addEventListener('click', (e) => { if(e.target.id==='scrim') closeDialog(); });
+function tickClock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}); }
+tickClock(); setInterval(tickClock, 15000);
+</script>
+</body>
+</html>

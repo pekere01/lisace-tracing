@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enstrüman Paneli — Lisans Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  /* coordinate readout strip */
+  .strip{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    margin-bottom:28px;
+  }
+  .readout{background:var(--panel);padding:16px 20px;position:relative}
+  .readout .axis{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+  .readout .val{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:34px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:8px}
+  .readout .unit{font-size:12px;color:var(--text-dim);font-weight:500}
+  .readout.total .val{color:var(--text)}
+  .readout.crit .val{color:var(--phos-red)}
+  .readout.soon .val{color:var(--phos-amber)}
+  .digit{display:inline-block;transition: transform 220ms var(--ease-in-out), opacity 220ms var(--ease-in-out)}
+
+  /* panel table */
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  }
+  .panel-head{
+    display:grid;grid-template-columns:1.3fr 2.2fr 1.8fr 1fr 1fr;
+    padding:12px 18px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .line{
+    display:grid;grid-template-columns:1.3fr 2.2fr 1.8fr 1fr 1fr;
+    align-items:center;
+    padding:13px 18px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    opacity:0; transform: translateY(6px);
+    animation: settle 420ms var(--ease-out) forwards;
+  }
+  .line:last-child{border-bottom:none}
+  @keyframes settle{ to{ opacity:1; transform:translateY(0)} }
+
+  .line .tag{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-dim)}
+  .line .firma{font-weight:600;font-size:13.5px}
+  .line .lisans{font-size:12px;color:var(--text-dim)}
+  .line .days{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;text-align:right;padding-right:10px}
+  .line .badge{
+    justify-self:end;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    padding:4px 9px;border-radius:999px;border:1px solid;
+  }
+
+  .line[data-status="crit"]{ background: linear-gradient(90deg, rgba(224,114,104,.06), transparent 60%); }
+  .line[data-status="crit"] .days{color:var(--phos-red)}
+  .line[data-status="crit"] .badge{color:var(--phos-red);border-color:var(--phos-red-dim);background:rgba(224,114,104,.08)}
+  .line[data-status="crit"]{ animation: settle 420ms var(--ease-out) forwards, alarm 4.5s ease-in-out 1s infinite; }
+
+  .line[data-status="warn"] .days{color:var(--phos-amber)}
+  .line[data-status="warn"] .badge{color:var(--phos-amber);border-color:var(--phos-amber-dim);background:rgba(230,164,88,.08)}
+
+  .line[data-status="ok"] .days{color:var(--phos-green)}
+  .line[data-status="ok"] .badge{color:var(--phos-green);border-color:var(--phos-green-dim);background:rgba(95,214,150,.06)}
+
+  @keyframes alarm{
+    0%, 100%{ background: linear-gradient(90deg, rgba(224,114,104,.04), transparent 60%); }
+    50%{ background: linear-gradient(90deg, rgba(224,114,104,.09), transparent 60%); }
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .line:hover{background:rgba(255,255,255,.02)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .line{animation: none !important; opacity:1; transform:none}
+    .digit{transition:opacity 200ms linear}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark"><span class="led"></span>LİSANS · KONTROL PANELİ</div>
+  <nav>
+    <a class="active" href="concept-c-enstruman-paneli.html">Panel</a>
+    <a href="concept-c-firmalar.html">Firmalar</a>
+    <a href="concept-c-yeni-firma.html">Yeni Firma</a>
+    <a href="concept-c-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a href="concept-c-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <div class="strip">
+    <div class="readout total">
+      <div class="axis">Toplam Firma</div>
+      <div class="val mono" id="val-total"><span class="digit">00</span><span class="unit">adet</span></div>
+    </div>
+    <div class="readout crit">
+      <div class="axis">Kritik — ≤30 Gün</div>
+      <div class="val mono" id="val-crit"><span class="digit">00</span></div>
+    </div>
+    <div class="readout soon">
+      <div class="axis">Yakında — 31–60 Gün</div>
+      <div class="val mono" id="val-warn"><span class="digit">00</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>KOD</div><div>FİRMA</div><div>LİSANS</div><div style="text-align:right">KALAN</div><div style="text-align:right">DURUM</div>
+    </div>
+    <div id="lines"></div>
+  </div>
+</main>
+<footer>Kavram C · Atölye Enstrüman Paneli — demo verisi kurgusaldır</footer>
+
+<script>
+const TODAY = new Date('2026-09-06');
+const companies = [
+  { kod:"F-014", firma:"Aydın Kalıp San. Tic. A.Ş.", lisans:"solidworks: Standard", bitis:"2026-09-10" },
+  { kod:"F-027", firma:"Vega Makine Ltd. Şti.", lisans:"solidcam: 2.5D Frezeleme", bitis:"2026-08-30" },
+  { kod:"F-031", firma:"Trio Makina San.", lisans:"solidworks: Professional", bitis:"2026-09-08" },
+  { kod:"F-042", firma:"Demirtaş Precision", lisans:"solidworks: Standard, solidcam: 2.5D", bitis:"2026-09-30" },
+  { kod:"F-055", firma:"Çelik Form Endüstri", lisans:"cimatron: Elektrot Modülü", bitis:"2026-10-01" },
+  { kod:"F-063", firma:"Nova Otomasyon A.Ş.", lisans:"solidworks: Standard", bitis:"2026-10-15" },
+  { kod:"F-071", firma:"Boru Hattı Mühendislik", lisans:"solidworks: Premium, solidcam: Tornalama", bitis:"2026-12-20" },
+  { kod:"F-080", firma:"Kalender Metal", lisans:"cimatron: Kalıp Modülü", bitis:"2027-01-15" },
+  { kod:"F-093", firma:"Yıldız Kaynak Sistemleri", lisans:"solidcam: 3+2 Frezeleme", bitis:"2026-11-20" },
+  { kod:"F-101", firma:"Orion Kalıp ve Model", lisans:"solidworks: Premium", bitis:"2027-02-10" },
+];
+
+function daysLeft(dateStr){ return Math.round((new Date(dateStr) - TODAY) / 86400000); }
+function statusOf(d){ return d<=30 ? "crit" : d<=60 ? "warn" : "ok"; }
+function statusLabel(s){ return s==="crit" ? "ALARM" : s==="warn" ? "İZLE" : "NORMAL"; }
+
+let data = companies.map(c => {
+  const days = daysLeft(c.bitis);
+  return { ...c, days, status: statusOf(days) };
+}).sort((a,b) => a.days - b.days);
+
+const linesEl = document.getElementById('lines');
+data.forEach((c, i) => {
+  const line = document.createElement('div');
+  line.className = 'line';
+  line.dataset.status = c.status;
+  line.style.animationDelay = (i * 45) + 'ms' + (c.status === 'crit' ? ', ' + (i*45+600) + 'ms' : '');
+  const dayText = c.days < 0 ? `+${Math.abs(c.days)}` : `${c.days}`;
+  line.innerHTML = `
+    <div class="tag">${c.kod}</div>
+    <div class="firma">${c.firma}</div>
+    <div class="lisans">${c.lisans}</div>
+    <div class="days">${dayText}</div>
+    <div class="badge">${statusLabel(c.status)}</div>
+  `;
+  linesEl.appendChild(line);
+});
+
+function animateDigit(el, target){
+  const from = parseInt(el.textContent) || 0;
+  if(from === target){ el.textContent = String(target).padStart(2,'0'); return; }
+  el.style.transform = 'translateY(-6px)'; el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = String(target).padStart(2,'0');
+    el.style.transition = 'none';
+    el.style.transform = 'translateY(6px)';
+    requestAnimationFrame(() => {
+      el.style.transition = 'transform 220ms cubic-bezier(0.23,1,0.32,1), opacity 220ms cubic-bezier(0.23,1,0.32,1)';
+      el.style.transform = 'translateY(0)'; el.style.opacity = '1';
+    });
+  }, 140);
+}
+
+const counts = { total: data.length, crit: data.filter(d=>d.status==='crit').length, warn: data.filter(d=>d.status==='warn').length };
+setTimeout(() => {
+  animateDigit(document.querySelector('#val-total .digit'), counts.total);
+  animateDigit(document.querySelector('#val-crit .digit'), counts.crit);
+  animateDigit(document.querySelector('#val-warn .digit'), counts.warn);
+}, 200);
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+}
+tickClock(); setInterval(tickClock, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tasarım Konseptleri — Lisans Paneli</title>
+<style>
+  :root{ --bg:#f5f4f1; --ink:#1c1b19; --dim:#6b6862; --line:#e2e0da; --ease-out:cubic-bezier(0.23,1,0.32,1); }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;padding:56px 24px 80px}
+  h1{font-size:22px;font-weight:700;letter-spacing:-.01em;margin:0 0 8px}
+  p.sub{color:var(--dim);margin:0 0 40px;font-size:14px;max-width:64ch}
+  .concept-group{max-width:1100px;margin-bottom:44px}
+  .concept-head{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+  .concept-head .letter{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--dim)}
+  .concept-head .name{font-size:19px;font-weight:700}
+  .concept-desc{font-size:13.5px;color:var(--dim);line-height:1.5;margin:0 0 18px;max-width:68ch}
+  .swatches{display:flex;gap:6px;margin-bottom:18px}
+  .swatches span{width:16px;height:16px;border-radius:4px;display:inline-block}
+  .page-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+  a.page-card{
+    display:block;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    text-decoration:none;color:var(--ink);
+    transition:transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  }
+  a.page-card:hover{transform:translateY(-2px);box-shadow:0 14px 26px -16px rgba(28,27,25,.22)}
+  a.page-card:active{transform:translateY(-1px) scale(.99);transition-duration:110ms}
+  a.page-card .pname{font-size:14px;font-weight:700;margin-bottom:4px}
+  a.page-card .proute{font-size:11.5px;color:var(--dim);font-family:ui-monospace,monospace}
+  .set-b{margin-top:56px;padding-top:28px;border-top:1px solid var(--line)}
+  .set-b .note{font-size:13px;color:var(--dim);margin-bottom:14px}
+  .set-b a.page-card{opacity:.75}
+  @media (prefers-reduced-motion: reduce){ a.page-card{transition:none} }
+</style>
+</head>
+<body>
+  <h1>Lisans Paneli — Tasarım Konseptleri</h1>
+  <p class="sub">Sonçağ Mühendislik lisans takip panelinin yeniden tasarımı için iki tam site
+  konsepti (A ve C — B "Sevkiyat Panosu" geri bildirim üzerine elendi). Hiçbiri canlı koda
+  dokunmuyor, gerçek olmayan (kurgusal) firma verisiyle çalışan bağımsız demo sayfaları.</p>
+
+  <div class="concept-group">
+    <div class="concept-head"><span class="letter">KAVRAM A</span><span class="name">Kalibrasyon Etiketi</span></div>
+    <p class="concept-desc">Her firma, ekipmana asılan bir muayene etiketi gibi görünür — renkli
+    geçerlilik bandı, ip, zımba deliği. Tıklayınca etiket çevrilir.</p>
+    <div class="swatches"><span style="background:#e4cd9c"></span><span style="background:#a33327"></span><span style="background:#a8721c"></span><span style="background:#2f6b45"></span></div>
+    <div class="page-grid">
+      <a class="page-card" href="concept-a-login.html"><div class="pname">Giriş</div><div class="proute">/login</div></a>
+      <a class="page-card" href="concept-a-kalibrasyon.html"><div class="pname">Panel</div><div class="proute">/</div></a>
+      <a class="page-card" href="concept-a-firmalar.html"><div class="pname">Firmalar</div><div class="proute">/firmalar</div></a>
+      <a class="page-card" href="concept-a-firma-detay.html"><div class="pname">Firma Detayı</div><div class="proute">/firmalar/[id]</div></a>
+      <a class="page-card" href="concept-a-yeni-firma.html"><div class="pname">Yeni Firma</div><div class="proute">/yeni</div></a>
+      <a class="page-card" href="concept-a-uyarilar.html"><div class="pname">Uyarılar</div><div class="proute">/uyarilar</div></a>
+      <a class="page-card" href="concept-a-kullanicilar.html"><div class="pname">Kullanıcılar</div><div class="proute">/kullanicilar</div></a>
+    </div>
+  </div>
+
+  <div class="concept-group">
+    <div class="concept-head"><span class="letter">KAVRAM C</span><span class="name">Atölye Enstrüman Paneli</span></div>
+    <p class="concept-desc">SolidCAM'in kendi dünyasından: bir CNC kontrol ekranı gibi sayısal
+    okumalar ve kritik lisanslar için gerçek bir alarm göstergesi.</p>
+    <div class="swatches"><span style="background:#0a0c0b"></span><span style="background:#5fe8a0"></span><span style="background:#f0a94e"></span><span style="background:#ef6a5a"></span></div>
+    <div class="page-grid">
+      <a class="page-card" href="concept-c-login.html"><div class="pname">Giriş</div><div class="proute">/login</div></a>
+      <a class="page-card" href="concept-c-enstruman-paneli.html"><div class="pname">Panel</div><div class="proute">/</div></a>
+      <a class="page-card" href="concept-c-firmalar.html"><div class="pname">Firmalar</div><div class="proute">/firmalar</div></a>
+      <a class="page-card" href="concept-c-firma-detay.html"><div class="pname">Firma Detayı</div><div class="proute">/firmalar/[id]</div></a>
+      <a class="page-card" href="concept-c-yeni-firma.html"><div class="pname">Yeni Firma</div><div class="proute">/yeni</div></a>
+      <a class="page-card" href="concept-c-uyarilar.html"><div class="pname">Uyarılar</div><div class="proute">/uyarilar</div></a>
+      <a class="page-card" href="concept-c-kullanicilar.html"><div class="pname">Kullanıcılar</div><div class="proute">/kullanicilar</div></a>
+    </div>
+  </div>
+
+  <div class="set-b">
+    <p class="note">KAVRAM B — Sevkiyat Panosu: beğenilmedi, sadece referans için duruyor (tek sayfa).</p>
+    <div class="page-grid" style="max-width:210px">
+      <a class="page-card" href="concept-b-sevkiyat-panosu.html"><div class="pname">Panel (arşiv)</div><div class="proute">/</div></a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F-014 · Aydın Kalıp — Firma Detayı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media (max-width:860px){ .detail-grid{grid-template-columns:1fr} }
+  .info-line{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-bottom:10px}
+  .info-line .k{color:var(--text-dim);min-width:66px;flex-shrink:0;font:700 11px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+  .license-row{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--panel-2)}
+  .license-row .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .license-row .name{font-weight:600;font-size:13px}
+  .file-chip{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);margin-bottom:8px;font-size:12.5px}
+  .file-ext{width:32px;height:32px;border-radius:9px;background:var(--panel);border:1px solid var(--line-bright);display:flex;align-items:center;justify-content:center;font:700 11px "JetBrains Mono",monospace;color:var(--text-dim);flex-shrink:0}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5 20 3"/><path d="M17 6l3 3"/><path d="M14 9l2 2"/></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+</svg>
+<header>
+  <div class="wordmark"><span class="led"></span>LİSANS · KONTROL PANELİ</div>
+  <nav>
+    <a href="concept-c-enstruman-paneli.html">Panel</a>
+    <a class="active" href="concept-c-firmalar.html">Firmalar</a>
+    <a href="concept-c-yeni-firma.html">Yeni Firma</a>
+    <a href="concept-c-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a href="concept-c-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div class="crumb">
+      <a class="back-btn" href="concept-c-firmalar.html"><svg class="icon"><use href="#i-chevron-left"/></svg></a>
+      <div>
+        <h1>F-014 · Aydın Kalıp San. Tic. A.Ş. <span class="chip chip-crit">Alarm · 4</span></h1>
+        <p>Son işlem: emre.a — panelden güncellendi</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline"><svg class="icon"><use href="#i-download"/></svg> Excel</button>
+      <a class="btn btn-primary" href="concept-c-yeni-firma.html"><svg class="icon"><use href="#i-pencil"/></svg> Düzenle</a>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div>
+      <div class="card-block">
+        <h2>İletişim &amp; CRM</h2>
+        <div class="info-line"><span class="k">YETKİLİ</span><span>Serkan Aydın — 0532 xxx xx xx</span></div>
+        <div class="info-line"><span class="k">ADRES</span><span>OSB 3. Cad. No:14, Bursa</span></div>
+        <div class="info-line"><span class="k">NOT</span><span style="color:var(--text-dim)">Yıllık bakım anlaşması var, faturayı muhasebe ile paylaş. (emre.a)</span></div>
+      </div>
+
+      <div class="card-block">
+        <h2>Görüşme Geçmişi</h2>
+        <p class="sub" style="margin-bottom:14px">Son görüşmeler ve notlar</p>
+        <div class="timeline-item">
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="seal">SA</div><div class="timeline-rule"></div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-meta"><span class="author">emre.a</span><span>2026-09-01</span><span class="chip chip-neutral">TELEFON</span></div>
+            <p class="timeline-note">Yenileme hatırlatması yapıldı, teklif bekleniyor. Ekim başında tekrar aranacak.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div style="display:flex;flex-direction:column;align-items:center"><div class="seal">SA</div></div>
+          <div class="timeline-body">
+            <div class="timeline-meta"><span class="author">emre.a</span><span>2026-06-14</span><span class="chip chip-neutral">ZİYARET</span></div>
+            <p class="timeline-note">Yerinde ziyaret, yeni CAM lisansı talebi görüşüldü.</p>
+          </div>
+        </div>
+        <button class="btn btn-outline" style="margin-top:4px">+ Görüşme Ekle</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-block">
+        <h2>Lisanslar</h2>
+        <div class="license-row">
+          <div class="top"><span class="name">SolidWorks · Standard</span><span class="chip chip-crit">Alarm · 4</span></div>
+          <div class="bar"><span style="width:97%;background:var(--phos-red)"></span></div>
+          <div class="mono" style="font-size:12px;color:var(--text-dim);margin-top:6px">NO: SW-88213 · BİTİŞ: 2026-09-10</div>
+        </div>
+      </div>
+
+      <div class="card-block">
+        <h2>Dosyalar</h2>
+        <a class="file-chip" href="#" onclick="return false"><span class="file-ext">PDF</span><span style="flex:1">lisans_sozlesmesi_2026.pdf</span><svg class="icon"><use href="#i-download"/></svg></a>
+        <a class="file-chip" href="#" onclick="return false"><span class="file-ext">XLS</span><span style="flex:1">teklif_taslak.xlsx</span><svg class="icon"><use href="#i-download"/></svg></a>
+        <button class="btn btn-outline">+ Dosya Ekle</button>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>Kavram C · Atölye Enstrüman Paneli — Firma Detayı — demo verisi kurgusaldır</footer>
+<script>
+function tickClock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}); }
+tickClock(); setInterval(tickClock, 15000);
+</script>
+</body>
+</html>

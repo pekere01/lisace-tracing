@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yeni Firma — Enstrüman Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  .lic-line{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto auto;gap:12px;align-items:end;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel-2)}
+  @media (max-width:900px){ .lic-line{grid-template-columns:1fr 1fr} }
+  .icon-btn{width:34px;height:34px;border-radius:10px;background:transparent;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 140ms var(--ease-out), border-color 140ms var(--ease-out)}
+  .icon-btn:hover{border-color:var(--phos-red-dim)}
+  .icon-btn:active{transform:scale(.92)}
+  .file-chip{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);margin-bottom:8px;font-size:12.5px}
+  .file-ext{width:32px;height:32px;border-radius:9px;background:var(--panel);border:1px solid var(--line-bright);display:flex;align-items:center;justify-content:center;font:700 11px "JetBrains Mono",monospace;color:var(--text-dim);flex-shrink:0}
+  .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5 20 3"/><path d="M17 6l3 3"/><path d="M14 9l2 2"/></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+</svg>
+<header>
+  <div class="wordmark"><span class="led"></span>LİSANS · KONTROL PANELİ</div>
+  <nav>
+    <a href="concept-c-enstruman-paneli.html">Panel</a>
+    <a href="concept-c-firmalar.html">Firmalar</a>
+    <a class="active" href="concept-c-yeni-firma.html">Yeni Firma</a>
+    <a href="concept-c-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a href="concept-c-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main style="max-width:920px">
+  <div class="page-head"><div><h1>Yeni Firma Kaydı</h1><p>Yeni bir kontrol kanalı açılıyor</p></div></div>
+
+  <form onsubmit="return false">
+    <div class="card-block">
+      <h2>Firma Bilgileri</h2>
+      <div class="field-row" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+        <div class="field"><label>FİRMA ADI *</label><input required placeholder="Örn: Vega Makine Ltd. Şti."></div>
+        <div class="field"><label>ADRES</label><input placeholder="OSB 3. Cad. No:14, Bursa"></div>
+      </div>
+      <div class="field-row" style="grid-template-columns:1fr 1fr">
+        <div class="field"><label>YETKİLİ</label><input placeholder="Ad Soyad"></div>
+        <div class="field"><label>TELEFON</label><input placeholder="05xx xxx xx xx"></div>
+      </div>
+    </div>
+
+    <div class="card-block">
+      <h2>Not</h2>
+      <p class="sub">Serbest metin CRM notu</p>
+      <div class="field-row" style="grid-template-columns:200px 1fr">
+        <div class="field"><label>YAZAN</label><input placeholder="Kullanıcı adı"></div>
+        <div class="field"><label>NOT</label><textarea rows="3" placeholder="..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="card-block">
+      <div class="card-block-head">
+        <div><h2>Lisanslar</h2><p class="sub" style="margin:0">SolidWorks, SolidCAM ve diğer ürün lisansları</p></div>
+        <button type="button" class="btn btn-outline" onclick="addLicenseRow()">+ Lisans Ekle</button>
+      </div>
+      <div id="lic-rows"></div>
+    </div>
+
+    <div class="card-block">
+      <h2>Dosyalar</h2>
+      <a class="file-chip" href="#" onclick="return false"><span class="file-ext">PDF</span><span style="flex:1">teklif_taslak.pdf</span><svg class="icon"><use href="#i-x"/></svg></a>
+      <input type="file" multiple style="font-size:12px;color:var(--text-dim)">
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline">Vazgeç</button>
+      <button type="submit" class="btn btn-primary">Firmayı Oluştur</button>
+    </div>
+  </form>
+</main>
+<footer>Kavram C · Atölye Enstrüman Paneli — Yeni Firma — demo verisi kurgusaldır</footer>
+
+<script>
+function licenseRowHtml(){
+  return `
+  <div class="lic-line">
+    <div class="field"><label>ÜRÜN</label><input placeholder="solidworks"></div>
+    <div class="field"><label>TİP / MODÜL</label><input placeholder="Standard"></div>
+    <div class="field"><label>SERİ NO</label><input placeholder="Seri No"></div>
+    <div class="field"><label>BİTİŞ TARİHİ</label><input type="date"></div>
+    <label class="checkline" style="padding-bottom:9px"><input type="checkbox"> DENEME</label>
+    <button type="button" class="icon-btn" onclick="this.closest('.lic-line').remove()"><svg class="icon"><use href="#i-trash"/></svg></button>
+  </div>`;
+}
+function addLicenseRow(){ document.getElementById('lic-rows').insertAdjacentHTML('beforeend', licenseRowHtml()); }
+addLicenseRow();
+function tickClock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}); }
+tickClock(); setInterval(tickClock, 15000);
+</script>
+</body>
+</html>

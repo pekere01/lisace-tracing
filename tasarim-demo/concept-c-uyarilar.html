@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uyarılar — Enstrüman Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-c-shared.css">
+<style>
+  .stage-tabs{display:flex;gap:2px;margin-bottom:0;border-bottom:1px solid var(--line)}
+  .stage-tab{padding:10px 16px;font:600 13px "Archivo",ui-sans-serif,sans-serif;letter-spacing:0;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:2px solid transparent;transition:color 140ms var(--ease-out), border-color 140ms var(--ease-out)}
+  .stage-tab.active{color:var(--text);border-color:var(--phos-green)}
+  .stage-panel{display:none;padding:20px 0}
+  .stage-panel.active{display:block}
+  .stage-desc{font-size:12px;color:var(--text-dim);margin:0 0 16px}
+  .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:800px){ .group-grid{grid-template-columns:1fr} }
+  .group-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);transition:border-color 160ms var(--ease-out), transform 160ms var(--ease-out)}
+  .group-card:hover{border-color:var(--line-bright);transform:translateY(-2px)}
+  .group-card .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:600;font-size:13px}
+  .group-line{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--text-dim);padding-top:7px;border-top:1px solid var(--line);margin-top:7px}
+  .group-line:first-of-type{border-top:none;padding-top:0;margin-top:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark"><span class="led"></span>LİSANS · KONTROL PANELİ</div>
+  <nav>
+    <a href="concept-c-enstruman-paneli.html">Panel</a>
+    <a href="concept-c-firmalar.html">Firmalar</a>
+    <a href="concept-c-yeni-firma.html">Yeni Firma</a>
+    <a class="active" href="concept-c-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a href="concept-c-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <div class="page-head"><div><h1>Lisans Yenileme Takibi</h1><p>Renewable, Recapture ve Sunset (7 kayıt)</p></div></div>
+
+  <div class="stage-tabs">
+    <div class="stage-tab active" data-tab="renewable"><span class="dot dot-warn"></span> Renewable <span class="chip chip-neutral">4</span></div>
+    <div class="stage-tab" data-tab="recapture"><span class="dot dot-crit"></span> Recapture <span class="chip chip-neutral">2</span></div>
+    <div class="stage-tab" data-tab="sunset"><span class="dot" style="background:var(--text-dim)"></span> Sunset <span class="chip chip-neutral">1</span></div>
+  </div>
+
+  <div class="stage-panel active" data-panel="renewable">
+    <p class="stage-desc">Aboneliği devam eden, 30 gün içinde yenileme tarihi gelen lisanslar.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Aydın Kalıp San. Tic. A.Ş.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">4</span></div></a>
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Trio Makina San.</span></div>
+        <div class="group-line"><span>solidworks · Professional</span><span class="mono">2</span></div></a>
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Demirtaş Precision</span><span class="chip chip-neutral">2 lisans</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">24</span></div>
+        <div class="group-line"><span>solidcam · 2.5D</span><span class="mono">24</span></div></a>
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Çelik Form Endüstri</span></div>
+        <div class="group-line"><span>cimatron · Elektrot Modülü</span><span class="mono">25</span></div></a>
+    </div>
+  </div>
+
+  <div class="stage-panel" data-panel="recapture">
+    <p class="stage-desc">Aboneliği sona ermiş ancak son 4 yıl içinde — hâlâ yeniden kazanılabilir.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Vega Makine Ltd. Şti.</span></div>
+        <div class="group-line"><span>solidcam · 2.5D Frezeleme</span><span class="mono">+7</span></div></a>
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Örnek Kalıp Ltd.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">+142</span></div></a>
+    </div>
+  </div>
+
+  <div class="stage-panel" data-panel="sunset">
+    <p class="stage-desc">4 yıldan uzun süredir sona ermiş — aktif fırsat/yenileme yok, bilgi amaçlı.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-c-firma-detay.html"><div class="top"><span>Eski Referans A.Ş.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">+2190</span></div></a>
+    </div>
+  </div>
+</main>
+<footer>Kavram C · Atölye Enstrüman Paneli — Uyarılar — demo verisi kurgusaldır</footer>
+
+<script>
+document.querySelectorAll('.stage-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.stage-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+  });
+});
+function tickClock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}); }
+tickClock(); setInterval(tickClock, 15000);
+</script>
+</body>
+</html>

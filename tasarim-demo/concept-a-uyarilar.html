@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uyarılar — Kalibrasyon Etiketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="concept-a-shared.css">
+<style>
+  .stage-tabs{display:flex;gap:8px;margin-bottom:6px}
+  .stage-tab{padding:9px 16px;border-radius:6px 6px 0 0;font-size:13px;font-weight:600;color:var(--ink-soft);background:var(--kraft);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 140ms var(--ease-out)}
+  .stage-tab.active{background:var(--paper);color:var(--ink);font-weight:700}
+  .stage-panel{display:none;background:var(--paper);border:1px solid var(--ground-line);border-radius:0 8px 8px 8px;padding:20px}
+  .stage-panel.active{display:block}
+  .stage-desc{font-size:12.5px;color:var(--ink-soft);margin:0 0 16px}
+  .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:800px){ .group-grid{grid-template-columns:1fr} }
+  .group-card{border:1px solid var(--ground-line);border-left:3px solid var(--kraft-shadow);border-radius:8px;padding:12px 14px;background:#fff;transition:transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out)}
+  .group-card:hover{transform:translateY(-2px);box-shadow:0 12px 22px -16px rgba(43,41,38,.3)}
+  .group-card .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:700;font-size:13.5px}
+  .group-line{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding-top:7px;border-top:1px dashed var(--ground-line);margin-top:7px}
+  .group-line:first-of-type{border-top:none;padding-top:0;margin-top:0}
+  .empty-note{border:1px dashed var(--ground-line);border-radius:8px;padding:26px;text-align:center;color:var(--ink-soft);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark"><span class="hole"></span> LİSANS PANELİ</div>
+  <nav>
+    <a class="tab" href="concept-a-kalibrasyon.html">Panel</a>
+    <a class="tab" href="concept-a-firmalar.html">Firmalar</a>
+    <a class="tab" href="concept-a-yeni-firma.html">Yeni Firma</a>
+    <a class="tab active" href="concept-a-uyarilar.html">Uyarılar <span class="pip">5</span></a>
+    <a class="tab" href="concept-a-kullanicilar.html">Kullanıcılar</a>
+  </nav>
+  <div class="user">EA</div>
+</header>
+
+<main>
+  <div class="page-head"><div><h1>Lisans Yenileme Takibi</h1><p>Tüm lisansların yenileme durumu: Renewable, Recapture ve Sunset (7)</p></div></div>
+
+  <div class="stage-tabs">
+    <div class="stage-tab active" data-tab="renewable"><span class="dot dot-warn"></span> Renewable <span class="chip chip-neutral">4</span></div>
+    <div class="stage-tab" data-tab="recapture"><span class="dot dot-crit"></span> Recapture <span class="chip chip-neutral">2</span></div>
+    <div class="stage-tab" data-tab="sunset"><span class="dot dot-ok" style="background:var(--ink-soft)"></span> Sunset <span class="chip chip-neutral">1</span></div>
+  </div>
+
+  <div class="stage-panel active" data-panel="renewable">
+    <p class="stage-desc">Aboneliği devam eden, 30 gün içinde yenileme tarihi gelen lisanslar.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Aydın Kalıp San. Tic. A.Ş.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">4 gün kaldı</span></div></a>
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Trio Makina San.</span></div>
+        <div class="group-line"><span>solidworks · Professional</span><span class="mono">2 gün kaldı</span></div></a>
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Demirtaş Precision</span><span class="chip chip-neutral">2 lisans</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">24 gün kaldı</span></div>
+        <div class="group-line"><span>solidcam · 2.5D</span><span class="mono">24 gün kaldı</span></div></a>
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Çelik Form Endüstri</span></div>
+        <div class="group-line"><span>cimatron · Elektrot Modülü</span><span class="mono">25 gün kaldı</span></div></a>
+    </div>
+  </div>
+
+  <div class="stage-panel" data-panel="recapture">
+    <p class="stage-desc">Aboneliği sona ermiş ancak son 4 yıl içinde — hâlâ yeniden kazanılabilir.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Vega Makine Ltd. Şti.</span></div>
+        <div class="group-line"><span>solidcam · 2.5D Frezeleme</span><span class="mono">7 gün geçti</span></div></a>
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Örnek Kalıp Ltd.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">142 gün geçti</span></div></a>
+    </div>
+  </div>
+
+  <div class="stage-panel" data-panel="sunset">
+    <p class="stage-desc">4 yıldan uzun süredir sona ermiş — aktif fırsat/yenileme yok, bilgi amaçlı.</p>
+    <div class="group-grid">
+      <a class="group-card" href="concept-a-firma-detay.html"><div class="top"><span>Eski Referans A.Ş.</span></div>
+        <div class="group-line"><span>solidworks · Standard</span><span class="mono">6 yıl geçti</span></div></a>
+    </div>
+  </div>
+</main>
+<footer>Kavram A · Kalibrasyon Etiketi — Uyarılar — demo verisi kurgusaldır</footer>
+
+<script>
+document.querySelectorAll('.stage-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.stage-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
