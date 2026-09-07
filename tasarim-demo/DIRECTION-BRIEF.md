@@ -97,4 +97,7 @@ sayı okumaları değiştiğinde 7-segment sayaç gibi hızlı digit-roll animas
 - Kritik uyarı verisi PRODUCT.md ile birebir: 30 gün kuralı, "aile: etiket" lisans formatı.
 
 FINISH: unreviewed and undocumented is unfinished; bu klasördeki üç demo kullanıcı bir yön
-seçtikten sonra gerçek `src/` koduna taşınacak — bu adım henüz yapılmadı.
+seçtikten sonra gerçek `src/` koduna taşınacak. **2026-09-07: Konsept A ("Kalibrasyon
+Etiketi") seçildi ve gerçek `src/` koduna taşınıp canlıya alındı** (bkz. commit
+"redesign: canli paneli konsept A ... temasina tasi"). B ve C demoları arşiv/referans
+olarak kalıyor.
