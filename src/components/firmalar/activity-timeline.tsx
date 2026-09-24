@@ -8,6 +8,7 @@ import type { CompanyDetail } from "@/lib/companies";
 import type { CurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SuggestInput } from "@/components/ui/suggest-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -17,10 +18,12 @@ const ACTIVITY_TYPE_SUGGESTIONS = ["Telefon", "Ziyaret", "E-posta", "Toplantı",
 export function ActivityTimeline({
   companyId,
   activities,
+  deletedActivities,
   currentUser,
 }: {
   companyId: number;
   activities: CompanyDetail["activities"];
+  deletedActivities: CompanyDetail["deletedActivities"];
   currentUser: CurrentUser | null;
 }) {
   const router = useRouter();
@@ -131,13 +134,30 @@ export function ActivityTimeline({
         </div>
       )}
 
+      {currentUser?.role === "admin" && deletedActivities.length > 0 && (
+        <div className="flex flex-col gap-1.5 rounded-md border border-dashed border-destructive/40 bg-destructive/5 p-3">
+          <p className="text-xs font-semibold text-destructive">
+            Silinen görüşmeler (sadece admin görür)
+          </p>
+          {deletedActivities.map((d) => (
+            <div key={`${d.id}-${d.deletedAt}`} className="text-xs leading-relaxed text-muted-foreground">
+              <span className="line-through">{d.note}</span>
+              {" — "}
+              <span className="font-medium">{d.author}</span> yazmıştı,{" "}
+              <span className="font-medium text-destructive">{d.deletedBy}</span> sildi (
+              {new Date(d.deletedAt).toLocaleString("tr-TR")})
+            </div>
+          ))}
+        </div>
+      )}
+
       {adding ? (
         <form onSubmit={handleAdd} className="flex flex-col gap-2 rounded-md border border-border/60 p-3">
           <div className="flex gap-2">
-            <Input
-              list="activity-type-suggestions"
+            <SuggestInput
               value={activityType}
-              onChange={(e) => setActivityType(e.target.value)}
+              onChange={setActivityType}
+              suggestions={ACTIVITY_TYPE_SUGGESTIONS}
               placeholder="Tür (Telefon, Ziyaret...)"
               className="flex-1"
             />
@@ -148,11 +168,6 @@ export function ActivityTimeline({
               className="w-40"
             />
           </div>
-          <datalist id="activity-type-suggestions">
-            {ACTIVITY_TYPE_SUGGESTIONS.map((s) => (
-              <option key={s} value={s} />
-            ))}
-          </datalist>
           <Textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}

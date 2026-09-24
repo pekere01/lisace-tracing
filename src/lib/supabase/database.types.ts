@@ -79,6 +79,50 @@ export type Database = {
           },
         ]
       }
+      company_activity_deletions: {
+        Row: {
+          activity_date: string | null
+          activity_type: string | null
+          author: string | null
+          company_id: number | null
+          deleted_at: string
+          deleted_by: string
+          id: number
+          note: string | null
+          original_activity_id: number
+        }
+        Insert: {
+          activity_date?: string | null
+          activity_type?: string | null
+          author?: string | null
+          company_id?: number | null
+          deleted_at?: string
+          deleted_by: string
+          id?: number
+          note?: string | null
+          original_activity_id: number
+        }
+        Update: {
+          activity_date?: string | null
+          activity_type?: string | null
+          author?: string | null
+          company_id?: number | null
+          deleted_at?: string
+          deleted_by?: string
+          id?: number
+          note?: string | null
+          original_activity_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_activity_deletions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_files: {
         Row: {
           company_id: number | null

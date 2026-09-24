@@ -131,6 +131,7 @@ export default async function CompanyDetailPage(
               <ActivityTimeline
                 companyId={company.id}
                 activities={company.activities}
+                deletedActivities={company.deletedActivities}
                 currentUser={currentUser}
               />
             </CardContent>

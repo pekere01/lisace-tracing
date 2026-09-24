@@ -96,6 +96,16 @@ export type CompanyDetail = {
     note: string | null;
     author: string | null;
   }[];
+  /** Silinen görüşme kayıtları — RLS sadece admin'e döner, personel için hep boş gelir. */
+  deletedActivities: {
+    id: number;
+    activityType: string | null;
+    activityDate: string | null;
+    note: string | null;
+    author: string | null;
+    deletedBy: string;
+    deletedAt: string;
+  }[];
 };
 
 export async function getCompanyDetail(id: number): Promise<CompanyDetail | null> {
@@ -108,6 +118,7 @@ export async function getCompanyDetail(id: number): Promise<CompanyDetail | null
     { data: licensesRaw },
     { data: files },
     { data: activities },
+    { data: deletedActivities },
   ] = await Promise.all([
     supabase.from("companies").select("*").eq("id", id).maybeSingle(),
     supabase.from("contacts").select("full_name, phone").eq("company_id", id),
@@ -119,6 +130,11 @@ export async function getCompanyDetail(id: number): Promise<CompanyDetail | null
       .select("id, activity_type, activity_date, note, author")
       .eq("company_id", id)
       .order("activity_date", { ascending: false }),
+    supabase
+      .from("company_activity_deletions")
+      .select("original_activity_id, activity_type, activity_date, note, author, deleted_by, deleted_at")
+      .eq("company_id", id)
+      .order("deleted_at", { ascending: false }),
   ]);
 
   if (!company) return null;
@@ -159,6 +175,15 @@ export async function getCompanyDetail(id: number): Promise<CompanyDetail | null
       activityDate: a.activity_date,
       note: a.note,
       author: a.author,
+    })),
+    deletedActivities: (deletedActivities ?? []).map((d) => ({
+      id: d.original_activity_id,
+      activityType: d.activity_type,
+      activityDate: d.activity_date,
+      note: d.note,
+      author: d.author,
+      deletedBy: d.deleted_by,
+      deletedAt: d.deleted_at,
     })),
   };
 }

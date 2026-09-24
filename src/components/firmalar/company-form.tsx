@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SuggestInput } from "@/components/ui/suggest-input";
 import {
   Card,
   CardContent,
@@ -55,6 +56,7 @@ function licenseRowsFromDetail(company: CompanyDetail): LicenseRow[] {
 }
 
 const LABEL_SUGGESTIONS = [...SOLIDWORKS_TIERS, ...SOLIDCAM_MODULES];
+const FAMILY_SUGGESTIONS = ["solidworks", "solidcam", "solidcam_deneme", "cimatron"];
 
 export function CompanyForm({
   mode,
@@ -72,7 +74,6 @@ export function CompanyForm({
   const [address, setAddress] = useState(company?.address ?? "");
   const [contactFullName, setContactFullName] = useState(company?.contact?.fullName ?? "");
   const [contactPhone, setContactPhone] = useState(company?.contact?.phone ?? "");
-  const [noteAuthor, setNoteAuthor] = useState(company?.note?.author ?? "");
   const [noteText, setNoteText] = useState(company?.note?.note ?? "");
   const [licenses, setLicenses] = useState<LicenseRow[]>(() =>
     company ? licenseRowsFromDetail(company) : [newLicenseRow()]
@@ -159,11 +160,11 @@ export function CompanyForm({
       }
 
       await supabase.from("company_notes").delete().eq("company_id", companyId!);
-      if (noteAuthor.trim() || noteText.trim()) {
+      if (noteText.trim()) {
         const { error } = await supabase.from("company_notes").insert({
           company_id: companyId!,
-          author: noteAuthor.trim() || null,
-          note: noteText.trim() || null,
+          author: currentUsername,
+          note: noteText.trim(),
         });
         if (error) throw error;
       }
@@ -262,11 +263,7 @@ export function CompanyForm({
         <CardContent className="grid gap-4 sm:grid-cols-[200px_1fr]">
           <div className="flex flex-col gap-2">
             <Label htmlFor="noteAuthor">Yazan</Label>
-            <Input
-              id="noteAuthor"
-              value={noteAuthor}
-              onChange={(e) => setNoteAuthor(e.target.value)}
-            />
+            <Input id="noteAuthor" value={currentUsername} disabled />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="noteText">Not</Label>
@@ -311,19 +308,19 @@ export function CompanyForm({
             >
               <div className="flex flex-col gap-1.5">
                 <Label className="text-xs text-muted-foreground">Ürün</Label>
-                <Input
-                  list="family-suggestions"
+                <SuggestInput
                   value={l.family}
-                  onChange={(e) => updateLicense(l.key, { family: e.target.value })}
+                  onChange={(v) => updateLicense(l.key, { family: v })}
+                  suggestions={FAMILY_SUGGESTIONS}
                   placeholder="solidworks"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label className="text-xs text-muted-foreground">Tip / Modül</Label>
-                <Input
-                  list="label-suggestions"
+                <SuggestInput
                   value={l.label}
-                  onChange={(e) => updateLicense(l.key, { label: e.target.value })}
+                  onChange={(v) => updateLicense(l.key, { label: v })}
+                  suggestions={LABEL_SUGGESTIONS}
                   placeholder="Standard"
                 />
               </div>
@@ -366,17 +363,6 @@ export function CompanyForm({
             </div>
             );
           })}
-          <datalist id="family-suggestions">
-            <option value="solidworks" />
-            <option value="solidcam" />
-            <option value="solidcam_deneme" />
-            <option value="cimatron" />
-          </datalist>
-          <datalist id="label-suggestions">
-            {LABEL_SUGGESTIONS.map((s) => (
-              <option key={s} value={s} />
-            ))}
-          </datalist>
         </CardContent>
       </Card>
 
