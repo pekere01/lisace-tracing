@@ -65,7 +65,7 @@ function Shelf({
       {shown.length === 0 ? (
         <p className="pb-6 text-sm text-muted-foreground">Bu grupta firma yok.</p>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="kraft-scroll flex gap-4 overflow-x-auto pb-4">
           {shown.map((c) => (
             <Tag key={c.id} company={c} bucket={bucket} />
           ))}

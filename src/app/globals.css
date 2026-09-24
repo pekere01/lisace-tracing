@@ -134,3 +134,25 @@
     @apply font-sans;
   }
 }
+
+.kraft-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--kraft-shadow) transparent;
+}
+.kraft-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.kraft-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kraft-scroll::-webkit-scrollbar-thumb {
+  background: var(--kraft-dark);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.kraft-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--kraft-shadow);
+  background-clip: padding-box;
+}
