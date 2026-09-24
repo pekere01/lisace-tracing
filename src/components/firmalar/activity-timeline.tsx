@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { SuggestInput } from "@/components/ui/suggest-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { formatDateTR } from "@/lib/dates";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
 const ACTIVITY_TYPE_SUGGESTIONS = ["Telefon", "Ziyaret", "E-posta", "Toplantı", "Diğer"];
@@ -103,7 +104,7 @@ export function ActivityTimeline({
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-medium">{a.author}</span>
-                    <span className="font-mono text-[11px] text-muted-foreground">{a.activityDate}</span>
+                    <span className="font-mono text-[11px] text-muted-foreground">{formatDateTR(a.activityDate)}</span>
                     {a.activityType && (
                       <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
                         {a.activityType}

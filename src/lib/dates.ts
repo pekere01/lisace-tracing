@@ -1,5 +1,13 @@
 export type LicenseStatus = "expired" | "critical" | "warning" | "active";
 
+/** ISO tarih/timestamp'i "gg.aa.yyyy" olarak gösterir (görüşme geçmişi vb.). */
+export function formatDateTR(dateStr: string | null | undefined): string {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 /** "YYYY-MM-DD" formatındaki bir tarihe kaç gün kaldığını hesaplar (main.py'deki kalan_gun_bul). */
 export function daysRemaining(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;

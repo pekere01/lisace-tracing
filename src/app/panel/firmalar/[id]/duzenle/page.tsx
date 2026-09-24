@@ -26,6 +26,7 @@ export default async function EditCompanyPage(
         mode="edit"
         company={company}
         currentUsername={user?.username ?? "kullanıcı"}
+        isAdmin={user?.role === "admin"}
       />
     </div>
   );

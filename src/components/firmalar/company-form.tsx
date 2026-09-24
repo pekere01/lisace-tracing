@@ -62,13 +62,16 @@ export function CompanyForm({
   mode,
   company,
   currentUsername,
+  isAdmin = false,
 }: {
   mode: "create" | "edit";
   company?: CompanyDetail;
   currentUsername: string;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [deletingCompany, setDeletingCompany] = useState(false);
 
   const [name, setName] = useState(company?.name ?? "");
   const [address, setAddress] = useState(company?.address ?? "");
@@ -82,6 +85,35 @@ export function CompanyForm({
   const [existingFiles, setExistingFiles] = useState(company?.files ?? []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
+
+  async function handleDeleteCompany() {
+    if (!company) return;
+    if (
+      !window.confirm(
+        `"${company.name}" firmasını ve tüm lisans/görüşme/dosya kayıtlarını kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.`
+      )
+    ) {
+      return;
+    }
+    setDeletingCompany(true);
+    const supabase = createClient();
+    try {
+      for (const file of existingFiles) {
+        if (!file.fileUrl) continue;
+        const path = storagePathFromPublicUrl(file.fileUrl, BUCKET);
+        if (path) await supabase.storage.from(BUCKET).remove([path]);
+      }
+      const { error } = await supabase.from("companies").delete().eq("id", company.id);
+      if (error) throw error;
+      toast.success("Firma silindi.");
+      router.push("/panel/firmalar");
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Firma silinemedi.");
+      setDeletingCompany(false);
+    }
+  }
 
   function updateLicense(key: string, patch: Partial<LicenseRow>) {
     setLicenses((rows) => rows.map((r) => (r.key === key ? { ...r, ...patch } : r)));
@@ -424,14 +456,31 @@ export function CompanyForm({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Vazgeç
-        </Button>
-        <Button type="submit" disabled={submitting}>
-          {submitting && <Loader2 className="size-4 animate-spin" />}
-          {mode === "create" ? "Firmayı Oluştur" : "Kaydet"}
-        </Button>
+      <div className="flex items-center justify-between gap-2">
+        {mode === "edit" && isAdmin ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="border-destructive/40 text-destructive hover:bg-destructive/10"
+            disabled={deletingCompany}
+            onClick={handleDeleteCompany}
+          >
+            {deletingCompany && <Loader2 className="size-4 animate-spin" />}
+            <Trash2 className="size-4" />
+            Firmayı Sil
+          </Button>
+        ) : (
+          <span />
+        )}
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Vazgeç
+          </Button>
+          <Button type="submit" disabled={submitting}>
+            {submitting && <Loader2 className="size-4 animate-spin" />}
+            {mode === "create" ? "Firmayı Oluştur" : "Kaydet"}
+          </Button>
+        </div>
       </div>
     </form>
   );
