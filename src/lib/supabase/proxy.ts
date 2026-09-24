@@ -47,19 +47,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // firmalar/yeni/uyarilar/kullanicilar artık /panel altında yaşıyor (eski route
-  // group yerine gerçek segment) — kök "/" ve varsa eski bookmarklı linkler için
-  // tek bir yönlendirme noktası burada tutuluyor.
-  const OLD_TOP_LEVEL = ["/firmalar", "/yeni", "/uyarilar", "/kullanicilar"];
-  const pathname = request.nextUrl.pathname;
-  const isOldPath = OLD_TOP_LEVEL.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
-  );
-  if (pathname === "/" || isOldPath) {
-    const url = request.nextUrl.clone();
-    url.pathname = isOldPath ? `/panel${pathname}` : "/panel";
-    return NextResponse.redirect(url);
-  }
+  // "/" ve eski çıplak yollar (/firmalar, /yeni, ...) next.config.ts'teki
+  // redirects() ile /panel altına yönlendiriliyor — proxy sayfası olmayan
+  // yollar için hiç çalışmıyor (bkz. Vercel statik 404 kısayolu), o yüzden
+  // bu yönlendirme burada değil orada.
 
   return supabaseResponse;
 }
