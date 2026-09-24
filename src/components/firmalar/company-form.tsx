@@ -210,7 +210,7 @@ export function CompanyForm({
       });
 
       toast.success(mode === "create" ? "Firma oluşturuldu." : "Firma güncellendi.");
-      router.push(`/firmalar/${companyId}`);
+      router.push(`/panel/firmalar/${companyId}`);
       router.refresh();
     } catch (err) {
       console.error(err);

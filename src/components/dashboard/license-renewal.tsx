@@ -62,7 +62,7 @@ function groupByCompany(alerts: LicenseAlert[]): CompanyGroup[] {
 function CompanyPipelineCard({ group, stage }: { group: CompanyGroup; stage: RenewalStage }) {
   return (
     <Link
-      href={`/firmalar/${group.companyId}`}
+      href={`/panel/firmalar/${group.companyId}`}
       className={cn(
         "flex flex-col gap-2 rounded-lg border border-border border-l-[3px] bg-card px-3 py-2.5 text-sm transition-transform hover:-translate-y-0.5",
         STAGE_META[stage].borderClass

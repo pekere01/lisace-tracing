@@ -4,7 +4,7 @@ import { UsersTable } from "@/components/kullanicilar/users-table";
 
 export default async function KullanicilarPage() {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") redirect("/");
+  if (!user || user.role !== "admin") redirect("/panel");
 
   return (
     <div className="flex flex-col gap-6">

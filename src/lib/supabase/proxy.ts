@@ -43,7 +43,21 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isPublicRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/panel";
+    return NextResponse.redirect(url);
+  }
+
+  // firmalar/yeni/uyarilar/kullanicilar artık /panel altında yaşıyor (eski route
+  // group yerine gerçek segment) — kök "/" ve varsa eski bookmarklı linkler için
+  // tek bir yönlendirme noktası burada tutuluyor.
+  const OLD_TOP_LEVEL = ["/firmalar", "/yeni", "/uyarilar", "/kullanicilar"];
+  const pathname = request.nextUrl.pathname;
+  const isOldPath = OLD_TOP_LEVEL.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`)
+  );
+  if (pathname === "/" || isOldPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = isOldPath ? `/panel${pathname}` : "/panel";
     return NextResponse.redirect(url);
   }
 

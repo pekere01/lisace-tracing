@@ -28,7 +28,7 @@ function Tag({ company, bucket }: { company: CompanyListItem; bucket: Bucket }) 
 
   return (
     <Link
-      href={`/firmalar/${company.id}`}
+      href={`/panel/firmalar/${company.id}`}
       className="flex w-[210px] shrink-0 flex-col rounded-md border border-border bg-card px-3.5 py-3.5 shadow-sm transition-transform hover:-translate-y-1"
     >
       <div className="min-h-9 text-[14px] leading-tight font-bold text-ink">
@@ -71,7 +71,7 @@ function Shelf({
           ))}
           {cap && companies.length > cap && (
             <Link
-              href="/firmalar"
+              href="/panel/firmalar"
               className="flex w-[140px] shrink-0 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-kraft-shadow text-center text-xs font-semibold text-ink-soft transition-colors hover:text-ink"
             >
               +{companies.length - cap} firma daha

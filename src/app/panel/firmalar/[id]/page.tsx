@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 export default async function CompanyDetailPage(
-  props: PageProps<"/firmalar/[id]">
+  props: PageProps<"/panel/firmalar/[id]">
 ) {
   const { id } = await props.params;
   const companyId = Number(id);
@@ -48,7 +48,7 @@ export default async function CompanyDetailPage(
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/firmalar">
+          <Link href="/panel/firmalar">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
@@ -78,7 +78,7 @@ export default async function CompanyDetailPage(
           </a>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/firmalar/${company.id}/duzenle`}>
+          <Link href={`/panel/firmalar/${company.id}/duzenle`}>
             <Pencil className="size-4" />
             Düzenle
           </Link>

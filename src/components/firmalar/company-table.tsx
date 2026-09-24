@@ -129,7 +129,7 @@ export function CompanyTable({ companies }: { companies: CompanyListItem[] }) {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2.5">
                         <span className={cn("h-6 w-[3px] shrink-0 rounded-full", toneClass)} />
-                        <Link href={`/firmalar/${c.id}`} className="truncate hover:underline">
+                        <Link href={`/panel/firmalar/${c.id}`} className="truncate hover:underline">
                           {c.name.toUpperCase()}
                         </Link>
                       </div>
@@ -192,7 +192,7 @@ export function CompanyTable({ companies }: { companies: CompanyListItem[] }) {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Link href={`/firmalar/${c.id}`}>
+                      <Link href={`/panel/firmalar/${c.id}`}>
                         <ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                       </Link>
                     </TableCell>

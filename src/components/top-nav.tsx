@@ -14,10 +14,10 @@ import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Panel" },
-  { href: "/firmalar", label: "Firmalar" },
-  { href: "/yeni", label: "Yeni Firma" },
-  { href: "/uyarilar", label: "Uyarılar", badge: true },
+  { href: "/panel", label: "Panel" },
+  { href: "/panel/firmalar", label: "Firmalar" },
+  { href: "/panel/yeni", label: "Yeni Firma" },
+  { href: "/panel/uyarilar", label: "Uyarılar", badge: true },
 ];
 
 export function TopNav({
@@ -39,14 +39,14 @@ export function TopNav({
 
   const items =
     user.role === "admin"
-      ? [...NAV_ITEMS, { href: "/kullanicilar", label: "Kullanıcılar" }]
+      ? [...NAV_ITEMS, { href: "/panel/kullanicilar", label: "Kullanıcılar" }]
       : NAV_ITEMS;
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background/95 px-5 py-3.5 backdrop-blur-sm sm:px-7">
       <div className="flex min-w-0 flex-1 items-center gap-6 overflow-x-auto">
         <Link
-          href="/"
+          href="/panel"
           className="flex shrink-0 items-center gap-2.5 text-[15px] font-bold tracking-tight text-ink"
         >
           <span className="size-[9px] shrink-0 rounded-full bg-ink shadow-[inset_0_1px_1px_rgba(0,0,0,0.4)]" />

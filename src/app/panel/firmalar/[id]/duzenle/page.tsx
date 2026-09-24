@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { CompanyForm } from "@/components/firmalar/company-form";
 
 export default async function EditCompanyPage(
-  props: PageProps<"/firmalar/[id]/duzenle">
+  props: PageProps<"/panel/firmalar/[id]/duzenle">
 ) {
   const { id } = await props.params;
   const companyId = Number(id);
