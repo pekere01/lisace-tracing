@@ -20,6 +20,14 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Loader2, Plus, Trash2, FileDown, X } from "lucide-react";
 
 const BUCKET = "firma postlari";
@@ -72,6 +80,7 @@ export function CompanyForm({
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [deletingCompany, setDeletingCompany] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const [name, setName] = useState(company?.name ?? "");
   const [address, setAddress] = useState(company?.address ?? "");
@@ -88,13 +97,7 @@ export function CompanyForm({
 
   async function handleDeleteCompany() {
     if (!company) return;
-    if (
-      !window.confirm(
-        `"${company.name}" firmasını ve tüm lisans/görüşme/dosya kayıtlarını kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.`
-      )
-    ) {
-      return;
-    }
+    setConfirmDeleteOpen(false);
     setDeletingCompany(true);
     const supabase = createClient();
     try {
@@ -463,7 +466,7 @@ export function CompanyForm({
             variant="outline"
             className="border-destructive/40 text-destructive hover:bg-destructive/10"
             disabled={deletingCompany}
-            onClick={handleDeleteCompany}
+            onClick={() => setConfirmDeleteOpen(true)}
           >
             {deletingCompany && <Loader2 className="size-4 animate-spin" />}
             <Trash2 className="size-4" />
@@ -482,6 +485,27 @@ export function CompanyForm({
           </Button>
         </div>
       </div>
+
+      <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Firmayı sil</DialogTitle>
+            <DialogDescription>
+              &quot;{company?.name}&quot; firmasını ve tüm lisans/görüşme/dosya kayıtlarını kalıcı
+              olarak silmek istediğine emin misin? Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setConfirmDeleteOpen(false)}>
+              Vazgeç
+            </Button>
+            <Button type="button" variant="destructive" onClick={handleDeleteCompany}>
+              <Trash2 className="size-4" />
+              Evet, sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
